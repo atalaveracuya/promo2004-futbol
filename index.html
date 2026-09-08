@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Promoción 2004 - Alineación en vivo</title>
+<title>Promoción 2004 - Anótate</title>
 
 <!-- Vista previa al compartir el link (WhatsApp, Telegram, etc.) -->
-<meta property="og:title" content="⚽ Promoción 2004 - Alineación y asistencia">
-<meta property="og:description" content="Anótate para el partido del sábado y arma la alineación en vivo desde tu celular.">
+<meta property="og:title" content="⚽ Promoción 2004 - Anótate al partido">
+<meta property="og:description" content="Marca si vienes al partido del sábado y elige tu posición desde tu celular.">
 <meta property="og:image" content="https://atalaveracuya.github.io/promo2004-futbol/preview.png">
 <meta property="og:url" content="https://atalaveracuya.github.io/promo2004-futbol/">
 <meta property="og:type" content="website">
@@ -16,8 +16,7 @@
   :root{
     --bg:#0f1a12; --card:#16241a; --card2:#1d2f22; --accent:#3ba26a;
     --accent-dark:#256b46; --text:#eef3ee; --text-muted:#9fb3a6;
-    --border:#2a3f30; --danger:#c65b4e; --amber:#c98f3a; --blue:#3d7fbf;
-    --coral:#c9634a; --teal:#3ba296; --gray:#5f6f64;
+    --border:#2a3f30;
   }
   *{box-sizing:border-box;}
   body{
@@ -33,56 +32,6 @@
   header .status{font-size:10.5px; color:var(--text-muted); margin-top:4px;}
   header .status.live{color:var(--accent);}
   .wrap{max-width:480px; margin:0 auto; padding:12px;}
-  .pitch{
-    background:linear-gradient(var(--card),var(--card2));
-    border:1px solid var(--border); border-radius:16px;
-    padding:14px 10px 18px; position:relative;
-  }
-  .pitch::before{
-    content:""; position:absolute; left:14px; right:14px; top:50%;
-    border-top:1px dashed var(--border);
-  }
-  .row{display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:14px 0; position:relative; z-index:1;}
-  .slot{
-    background:var(--card); border:1.5px solid var(--border);
-    border-radius:12px; padding:8px 6px; flex:0 1 92px; max-width:98px; text-align:center;
-    cursor:pointer; -webkit-tap-highlight-color:transparent;
-    transition:transform .1s ease, border-color .15s ease, opacity .15s ease;
-    touch-action:none; user-select:none;
-  }
-  .formation-panel{margin-top:0; margin-bottom:12px;}
-  .chip-btn{
-    background:var(--card2); border:1px solid var(--border); border-radius:20px;
-    padding:8px 12px; font-size:12.5px; color:var(--text-muted); cursor:pointer;
-    -webkit-tap-highlight-color:transparent; text-align:left; line-height:1.3;
-  }
-  .chip-btn strong{color:var(--text); font-weight:700; display:block; font-size:13px;}
-  .chip-btn.active{border-color:var(--accent); background:rgba(59,162,106,.15); color:var(--text);}
-  .slot:active{transform:scale(0.96);}
-  .slot.dragging{opacity:.35;}
-  .slot.drop-target{outline:2px solid var(--accent); outline-offset:2px;}
-  .drag-ghost{
-    position:fixed; z-index:50; pointer-events:none; opacity:.92;
-    transform:translate(-50%,-50%); left:0; top:0;
-  }
-  .slot .tag{
-    display:inline-block; font-size:10px; font-weight:700; letter-spacing:.4px;
-    padding:2px 6px; border-radius:6px; margin-bottom:4px;
-  }
-  .slot .name{font-size:12.5px; font-weight:600; line-height:1.25;}
-  .slot .hint{font-size:10px; color:var(--text-muted); margin-top:2px;}
-  .dot-confirmed{
-    display:inline-block; width:7px; height:7px; border-radius:50%;
-    background:#3ba26a; margin-right:5px; vertical-align:middle;
-  }
-  .tag-ARQ{background:rgba(61,127,191,.18); color:#8fc0f2;}
-  .tag-DEF{background:rgba(201,143,58,.18); color:#f0c17e;}
-  .tag-VOL{background:rgba(59,162,150,.18); color:#7fd8c9;}
-  .tag-DEL{background:rgba(201,99,74,.18); color:#f0a08c;}
-  .border-ARQ{border-color:#3d7fbf;}
-  .border-DEF{border-color:#c98f3a;}
-  .border-VOL{border-color:#3ba296;}
-  .border-DEL{border-color:#c9634a;}
 
   section.panel{
     background:var(--card); border:1px solid var(--border); border-radius:14px;
@@ -113,28 +62,10 @@
   }
   .chip-pos:active{background:var(--accent-dark); color:var(--text);}
   .chip-pos.set{color:var(--text);}
-  .chip{
-    background:var(--card2); border:1px solid var(--border); border-radius:20px;
-    padding:8px 12px; font-size:12.5px; color:var(--text);
+  .dot-confirmed{
+    display:inline-block; width:7px; height:7px; border-radius:50%;
+    background:#3ba26a; margin-right:5px; vertical-align:middle;
   }
-  .chip-toggle{cursor:pointer; -webkit-tap-highlight-color:transparent; font-family:inherit;}
-  .chip-toggle:active{background:var(--accent-dark);}
-  .actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
-  .export-wrap{display:flex; flex-direction:column; align-items:center; gap:10px; padding:20px 0;}
-  .share-card{
-    width:340px; background:var(--bg); border:1px solid var(--border);
-    border-radius:16px; padding:16px;
-  }
-  .export-hint{font-size:12px; color:var(--text-muted); margin:0;}
-  .btn{
-    flex:1; padding:11px 10px; border-radius:10px; border:1px solid var(--border);
-    background:var(--card2); color:var(--text); font-size:13px; font-weight:600;
-    cursor:pointer; -webkit-tap-highlight-color:transparent;
-  }
-  .btn.primary{background:var(--accent); border-color:var(--accent-dark); color:#08170f;}
-  .btn:active{opacity:.8;}
-  .log{max-height:160px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;}
-  .log-item{font-size:12px; color:var(--text-muted); border-left:2px solid var(--accent); padding-left:8px;}
   .log-empty{font-size:12px; color:var(--text-muted); font-style:italic;}
 
   /* Modal */
@@ -143,7 +74,6 @@
     align-items:flex-end; justify-content:center; z-index:20;
   }
   .overlay.open{display:flex;}
-  #exportOverlay.open{align-items:center;}
   .sheet{
     background:var(--card); width:100%; max-width:480px; border-radius:18px 18px 0 0;
     padding:16px; max-height:75vh; overflow-y:auto;
@@ -181,52 +111,17 @@
       <button class="add-btn" id="addPlayerBtn" type="button">+ Agregar</button>
     </div>
     <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">
-      Toca tu nombre para anotarte 🟢. Se guarda para todos, en vivo.
+      Toca tu nombre para anotarte 🟢, y toca tu posición para elegirla. Se guarda para todos, en vivo.
     </p>
     <div class="chips" id="rosterList"></div>
   </section>
 
-  <section class="panel formation-panel">
-    <h2>Formación</h2>
-    <div class="chips" id="formationBar"></div>
-  </section>
-
-  <div class="pitch" id="pitch"></div>
-
-  <section class="panel">
-    <div class="panel-head">
-      <h2>Banca</h2>
-    </div>
-    <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">Toca a un jugador para marcar/quitar su llegada 🟢</p>
-    <div class="chips" id="bench"></div>
-  </section>
-
-  <section class="panel">
-    <h2>Cambios del partido</h2>
-    <div class="log" id="log"></div>
-  </section>
-
-  <div class="actions">
-    <button class="btn primary" id="downloadBtn" style="flex-basis:100%;">Descargar PNG para WhatsApp</button>
-  </div>
-  <div class="actions">
-    <button class="btn" id="undoBtn">Deshacer último cambio</button>
-    <button class="btn" id="resetBtn">Reiniciar alineación</button>
-  </div>
-
-</div>
-
-<div class="overlay" id="exportOverlay">
-  <div class="export-wrap">
-    <div id="shareCard" class="share-card"></div>
-    <p class="export-hint">Generando imagen…</p>
-  </div>
 </div>
 
 <div class="overlay" id="posOverlay">
   <div class="sheet">
     <h3 id="posSheetTitle">Elegir posición</h3>
-    <p class="sub">¿En qué posición juega?</p>
+    <p class="sub">¿En qué posición juegas?</p>
     <button class="pick" data-tag="ARQ">🧤 Arquero</button>
     <button class="pick" data-tag="DEF">🛡️ Defensa</button>
     <button class="pick" data-tag="VOL">🎯 Volante</button>
@@ -236,617 +131,20 @@
   </div>
 </div>
 
-<div class="overlay" id="overlay">
-  <div class="sheet">
-    <h3 id="sheetTitle">Elegir jugador</h3>
-    <p class="sub" id="sheetSub"></p>
-    <div id="sheetList"></div>
-    <button class="close" id="sheetClose">Cancelar</button>
-  </div>
-</div>
-
 <!-- Firebase (compat SDK, no build tools needed) -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="shared.js"></script>
 <script>
-  // ============================================================
-  // 1) PEGA AQUÍ TU CONFIG DE FIREBASE (paso 4 de la guía)
-  // ============================================================
-  const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyC14Y-YWRQ8smHMQydtIGUL0Dc2XrwN8pI",
-    authDomain: "promo2004-futbol.firebaseapp.com",
-    projectId: "promo2004-futbol",
-    storageBucket: "promo2004-futbol.firebasestorage.app",
-    messagingSenderId: "882535263793",
-    appId: "1:882535263793:web:e8b77bc14e4d3a478def10"
-  };
-
-  // Cambia esto cada semana: identifica el partido (nadie confirmado al inicio)
-  const MATCH_ID = "2026-09-12";
-  const MATCH_LABEL = "Sáb 12/09 · 7:00 pm · 5ta fecha";
-
-  // ============================================================
-  // Roster base: id, nombre, posición de referencia (tag)
-  // El estado "confirmed" real vive en Firestore, no aquí.
-  // ============================================================
-  const BASE_ROSTER = {
-    p1:{name:"Víctor Espinoza", tag:""},
-    p2:{name:"Walter Fernández", tag:""},
-    p3:{name:"Erick Talavera", tag:"VOL"},
-    p4:{name:"Faviani Solís", tag:""},
-    p5:{name:"Derrick Miranda", tag:"VOL"},
-    p6:{name:"Renzo Chumpitaz", tag:""},
-    p7:{name:"Renzo Yaya", tag:"VOL"},
-    p8:{name:"Ernesto Vásquez", tag:"DEF"},
-    p9:{name:"Eberth Morillo", tag:""},
-    p10:{name:"Oscar Bustamante", tag:"DEF"},
-    p11:{name:"Fernando Ramírez", tag:"DEL"},
-    p12:{name:"Gilberto Vásquez", tag:""},
-    p13:{name:"Ademir Paucar", tag:""},
-    p14:{name:"Willy García", tag:"ARQ"},
-    p15:{name:"Brayan García", tag:"VOL"},
-    p16:{name:"Luigi Chumbes", tag:"DEF"},
-    p17:{name:"Miguel Chumpitaz", tag:""},
-    p18:{name:"Daniel Torres", tag:""},
-    p19:{name:"José Camacho", tag:""},
-    p20:{name:"Jorge Purizaca", tag:"DEF"},
-    p21:{name:"Jorge Bautista", tag:""},
-    p22:{name:"Andrés Talavera", tag:""}
-  };
-
-  const FORMATIONS = {
-    "1-2-2": { DEL:1, VOL:2, DEF:2, note:"Equilibrada" },
-    "2-1-2": { DEL:2, VOL:1, DEF:2, note:"Doble punta" },
-    "2-2-1": { DEL:2, VOL:2, DEF:1, note:"Muy ofensiva" },
-    "1-3-1": { DEL:1, VOL:3, DEF:1, note:"Control de medio campo" },
-    "3-1-1": { DEL:3, VOL:1, DEF:1, note:"Todo al ataque" }
-  };
-
-  const LABELS = { DEL:"Delantero", VOL:"Volante", DEF:"Defensa", ARQ:"Arquero" };
-
-  function buildSlotDefs(formationKey){
-    const f = FORMATIONS[formationKey];
-    const defs = [];
-    ["DEL","VOL","DEF"].forEach(type => {
-      for(let i = 1; i <= f[type]; i++){
-        defs.push({ id: `${type}${i}`, label: LABELS[type], type });
-      }
-    });
-    defs.push({ id:"ARQ", label:"Arquero", type:"ARQ" });
-    return defs;
-  }
-
-  let SLOT_DEFS = buildSlotDefs("1-2-2");
-
-  // Alineación / formación: se guarda SOLO en este dispositivo (localStorage).
-  // La asistencia (quién viene) se guarda en Firestore y es compartida.
-  const DEFAULT_STATE = {
-    formation:"1-2-2",
-    slots:{ ARQ:"p14", DEF1:"p10", DEF2:"p16", VOL1:"p7", VOL2:"p15", DEL1:"p11" },
-    log:[],
-    history:[]
-  };
-
-  const STORAGE_KEY = `promo2004_lineup_${MATCH_ID}`;
-
-  function loadState(){
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return structuredClone(DEFAULT_STATE);
-      const parsed = JSON.parse(raw);
-      if(!parsed.slots) return structuredClone(DEFAULT_STATE);
-      if(!parsed.history) parsed.history = [];
-      if(!parsed.log) parsed.log = [];
-      if(!parsed.formation || !FORMATIONS[parsed.formation]) parsed.formation = "1-2-2";
-      const expected = buildSlotDefs(parsed.formation).map(d => d.id);
-      const valid = expected.every(id => parsed.slots[id]);
-      if(!valid) return structuredClone(DEFAULT_STATE);
-      return parsed;
-    }catch(e){ return structuredClone(DEFAULT_STATE); }
-  }
-
-  function saveState(){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }
-
-  let state = loadState();
-  SLOT_DEFS = buildSlotDefs(state.formation);
-  let activeSlot = null;
-
-  // ============================================================
-  // Firestore: asistencia compartida en tiempo real
-  // ============================================================
-  let remoteConfirmed = {};    // { playerId: true/false }
-  let remoteExtraPlayers = {}; // { playerId: {name, tag} }  -- jugadores agregados en vivo
-  let remotePositions = {};    // { playerId: "ARQ"|"DEF"|"VOL"|"DEL"|"" } -- posición elegida en vivo
-  let matchRef = null;
-  let firestoreReady = false;
-  let activePosPlayerId = null;
-
-  function initFirebase(){
-    try{
-      firebase.initializeApp(FIREBASE_CONFIG);
-      const db = firebase.firestore();
-      db.enablePersistence().catch(() => {});
-      matchRef = db.collection("matches").doc(MATCH_ID);
-
-      matchRef.get().then(snap => {
-        if(!snap.exists){
-          const initialConfirmed = {};
-          Object.keys(BASE_ROSTER).forEach(id => { initialConfirmed[id] = false; });
-          matchRef.set({ label: MATCH_LABEL, confirmed: initialConfirmed, extraPlayers: {}, positions: {} });
-        }
-      });
-
-      matchRef.onSnapshot(snap => {
-        const data = snap.data() || {};
-        remoteConfirmed = data.confirmed || {};
-        remoteExtraPlayers = data.extraPlayers || {};
-        remotePositions = data.positions || {};
-        firestoreReady = true;
-        setConnStatus(true);
-        renderAll();
-      }, err => {
-        console.error(err);
-        setConnStatus(false, "Error de conexión");
-      });
-    }catch(err){
-      console.error(err);
-      setConnStatus(false, "Firebase sin configurar");
-    }
-  }
-
-  function setConnStatus(ok, customText){
-    const el = document.getElementById("connStatus");
-    if(ok){
-      el.textContent = "🟢 Asistencia sincronizada en vivo";
-      el.classList.add("live");
-    } else {
-      el.textContent = customText || "Sin conexión — revisa FIREBASE_CONFIG";
-      el.classList.remove("live");
-    }
-  }
-
-  function getPlayer(id){
-    if(remoteExtraPlayers[id]){
-      const base = remoteExtraPlayers[id];
-      const tag = remotePositions.hasOwnProperty(id) ? remotePositions[id] : (base.tag || "");
-      return { ...base, tag, confirmed: !!remoteConfirmed[id] };
-    }
-    const base = BASE_ROSTER[id];
-    if(!base) return null;
-    const tag = remotePositions.hasOwnProperty(id) ? remotePositions[id] : base.tag;
-    return { ...base, tag, confirmed: !!remoteConfirmed[id] };
-  }
-
-  function allRosterIds(){
-    return [...Object.keys(BASE_ROSTER), ...Object.keys(remoteExtraPlayers)];
-  }
-
-  function toggleConfirmed(id){
-    if(!matchRef){ alert("Firebase no está configurado todavía."); return; }
-    const current = !!remoteConfirmed[id];
-    matchRef.update({ [`confirmed.${id}`]: !current }).catch(err => {
-      alert("No se pudo guardar: " + err.message);
-    });
-  }
-
-  function openPositionPicker(id){
-    if(!matchRef){ alert("Firebase no está configurado todavía."); return; }
-    activePosPlayerId = id;
-    const p = getPlayer(id);
-    document.getElementById("posSheetTitle").textContent = `Posición de ${p.name}`;
-    document.getElementById("posOverlay").classList.add("open");
-  }
-
-  function setPosition(tag){
-    if(!matchRef || !activePosPlayerId) { closePosPicker(); return; }
-    matchRef.update({ [`positions.${activePosPlayerId}`]: tag }).catch(err => {
-      alert("No se pudo guardar: " + err.message);
-    });
-    closePosPicker();
-  }
-
-  function closePosPicker(){
-    document.getElementById("posOverlay").classList.remove("open");
-    activePosPlayerId = null;
-  }
-
-  function addNewPlayer(){
-    if(!matchRef){ alert("Firebase no está configurado todavía."); return; }
-    const name = prompt("Nombre del jugador que se anota:");
-    if(!name || !name.trim()) return;
-    const id = `x${Date.now()}`;
-    matchRef.update({
-      [`extraPlayers.${id}`]: { name: name.trim(), tag:"" },
-      [`confirmed.${id}`]: true
-    }).catch(err => alert("No se pudo guardar: " + err.message));
-  }
-
-  function benchIds(){
-    const used = new Set(Object.values(state.slots));
-    const ids = allRosterIds().filter(id => !used.has(id));
-    ids.sort((a, b) => (getPlayer(b).confirmed ? 1 : 0) - (getPlayer(a).confirmed ? 1 : 0));
-    return ids;
-  }
-
-  function timeNow(){
-    return new Date().toLocaleTimeString("es-PE",{hour:"2-digit",minute:"2-digit"});
-  }
-
-  // ============================================================
-  // Lista de asistencia (todo el plantel, se anota cada uno)
-  // ============================================================
-  function renderRosterChips(containerId, ids){
-    const container = document.getElementById(containerId);
-    if(ids.length === 0){
-      container.innerHTML = `<span class="log-empty">Sin jugadores</span>`;
-      return;
-    }
-    container.innerHTML = ids.map(id => {
-      const p = getPlayer(id);
-      const dot = p.confirmed ? '<span class="dot-confirmed"></span>' : '';
-      const posLabel = p.tag ? p.tag : "＋ pos";
-      const posClass = p.tag ? "chip-pos set" : "chip-pos";
-      return `<span class="chip-group">
-        <button class="chip-name" data-id="${id}" type="button">${dot}${p.name}</button>
-        <button class="${posClass}" data-id="${id}" type="button">${posLabel}</button>
-      </span>`;
-    }).join("");
-    container.querySelectorAll(".chip-name").forEach(btn => {
-      btn.addEventListener("click", () => toggleConfirmed(btn.dataset.id));
-    });
-    container.querySelectorAll(".chip-pos").forEach(btn => {
-      btn.addEventListener("click", () => openPositionPicker(btn.dataset.id));
-    });
-  }
-
-  function renderRosterList(){
+  function renderAll(){
     renderRosterChips("rosterList", allRosterIds());
   }
 
-  function renderPitch(){
-    const pitch = document.getElementById("pitch");
-    pitch.innerHTML = "";
-    const groups = { DEL:[], VOL:[], DEF:[], ARQ:[] };
-    SLOT_DEFS.forEach(d => groups[d.type].push(d.id));
-    const rows = [groups.DEL, groups.VOL, groups.DEF, groups.ARQ].filter(r => r.length > 0);
-    rows.forEach(rowIds => {
-      const row = document.createElement("div");
-      row.className = "row";
-      rowIds.forEach(slotId => {
-        const def = SLOT_DEFS.find(s => s.id === slotId);
-        const playerId = state.slots[slotId];
-        const player = getPlayer(playerId);
-        const el = document.createElement("div");
-        el.className = `slot border-${def.type}`;
-        el.dataset.slot = slotId;
-        el.setAttribute("role","button");
-        el.setAttribute("tabindex","0");
-        el.setAttribute("aria-label", `${def.label}: ${player.name}. Mantén presionado y arrastra para cambiar de posición, o toca para sustituir.`);
-        el.innerHTML = `
-          <span class="tag tag-${def.type}">${def.type}</span>
-          <div class="name">${player.confirmed ? '<span class="dot-confirmed"></span>' : ''}${player.name}</div>
-          <div class="hint">arrastra o toca</div>
-        `;
-        attachSlotEvents(el, slotId);
-        row.appendChild(el);
-      });
-      pitch.appendChild(row);
-    });
-  }
-
-  function renderBench(){
-    renderRosterChips("bench", benchIds());
-  }
-
-  function renderLog(){
-    const log = document.getElementById("log");
-    if(state.log.length === 0){
-      log.innerHTML = `<span class="log-empty">Todavía no hay cambios registrados</span>`;
-      return;
-    }
-    log.innerHTML = state.log
-      .slice()
-      .reverse()
-      .map(item => `<div class="log-item">${item.time} — ${item.text}</div>`)
-      .join("");
-  }
-
-  function renderFormationBar(){
-    const bar = document.getElementById("formationBar");
-    bar.innerHTML = Object.entries(FORMATIONS).map(([key, f]) => {
-      const active = key === state.formation ? " active" : "";
-      return `<button class="chip-btn${active}" data-formation="${key}">
-        <strong>${key}</strong>${f.note}
-      </button>`;
-    }).join("");
-    bar.querySelectorAll(".chip-btn").forEach(btn => {
-      btn.addEventListener("click", () => setFormation(btn.dataset.formation));
-    });
-  }
-
-  function setFormation(newKey){
-    if(newKey === state.formation) return;
-    const oldOutfieldIds = SLOT_DEFS.filter(d => d.type !== "ARQ").map(d => state.slots[d.id]);
-
-    state.history.push({ slots: structuredClone(state.slots), formation: state.formation });
-
-    const oldKey = state.formation;
-    state.formation = newKey;
-    SLOT_DEFS = buildSlotDefs(newKey);
-
-    const newOutfieldDefs = SLOT_DEFS.filter(d => d.type !== "ARQ");
-    const newSlots = { ARQ: state.slots.ARQ };
-    newOutfieldDefs.forEach((d, i) => { newSlots[d.id] = oldOutfieldIds[i]; });
-    state.slots = newSlots;
-
-    state.log.push({ time: timeNow(), text: `Cambio de formación: ${oldKey} → ${newKey}` });
-
-    saveState();
-    renderAll();
-  }
-
-  function renderAll(){
-    renderRosterList();
-    renderFormationBar();
-    renderPitch();
-    renderBench();
-    renderLog();
-  }
-
-  function attachSlotEvents(el, slotId){
-    el.addEventListener("pointerdown", (e) => onSlotPointerDown(e, slotId, el));
-  }
-
-  function onSlotPointerDown(e, slotId, el){
-    e.preventDefault();
-    const startX = e.clientX;
-    const startY = e.clientY;
-    let moved = false;
-    let ghost = null;
-
-    function onMove(ev){
-      const dx = ev.clientX - startX;
-      const dy = ev.clientY - startY;
-      if(!moved && Math.hypot(dx, dy) > 10){
-        moved = true;
-        el.classList.add("dragging");
-        ghost = el.cloneNode(true);
-        ghost.classList.add("drag-ghost");
-        ghost.style.width = el.offsetWidth + "px";
-        document.body.appendChild(ghost);
-      }
-      if(moved && ghost){
-        ghost.style.left = ev.clientX + "px";
-        ghost.style.top = ev.clientY + "px";
-        document.querySelectorAll(".slot.drop-target").forEach(s => s.classList.remove("drop-target"));
-        const target = document.elementFromPoint(ev.clientX, ev.clientY)?.closest(".slot");
-        if(target && target !== el){
-          target.classList.add("drop-target");
-        }
-      }
-    }
-
-    function onUp(ev){
-      document.removeEventListener("pointermove", onMove);
-      el.classList.remove("dragging");
-      document.querySelectorAll(".slot.drop-target").forEach(s => s.classList.remove("drop-target"));
-      if(ghost) ghost.remove();
-
-      if(moved){
-        const target = document.elementFromPoint(ev.clientX, ev.clientY)?.closest(".slot");
-        if(target && target.dataset.slot && target.dataset.slot !== slotId){
-          swapFieldPositions(slotId, target.dataset.slot);
-        }
-      } else {
-        openSheet(slotId);
-      }
-    }
-
-    document.addEventListener("pointermove", onMove);
-    document.addEventListener("pointerup", onUp, { once:true });
-  }
-
-  function swapFieldPositions(slotA, slotB){
-    const defA = SLOT_DEFS.find(s => s.id === slotA);
-    const defB = SLOT_DEFS.find(s => s.id === slotB);
-    const playerAId = state.slots[slotA];
-    const playerBId = state.slots[slotB];
-    const playerA = getPlayer(playerAId);
-    const playerB = getPlayer(playerBId);
-
-    state.history.push({ slots: structuredClone(state.slots), formation: state.formation });
-    state.slots[slotA] = playerBId;
-    state.slots[slotB] = playerAId;
-    state.log.push({
-      time: timeNow(),
-      text: `${playerA.name} y ${playerB.name} intercambian posición (${defA.label} ↔ ${defB.label})`
-    });
-
-    saveState();
-    renderAll();
-  }
-
-  function openSheet(slotId){
-    activeSlot = slotId;
-    const def = SLOT_DEFS.find(s => s.id === slotId);
-    const current = getPlayer(state.slots[slotId]);
-    document.getElementById("sheetTitle").textContent = `Cambiar ${def.label.toLowerCase()}`;
-    document.getElementById("sheetSub").textContent = `Sale: ${current.name}. Elige quién entra:`;
-    const list = document.getElementById("sheetList");
-
-    const benchOptions = benchIds().map(id => {
-      const p = getPlayer(id);
-      return { id, label: `${p.confirmed ? '🟢 ' : ''}${p.name}${p.tag ? " (" + p.tag + ")" : ""}` };
-    });
-
-    const onFieldOptions = Object.entries(state.slots)
-      .filter(([sId]) => sId !== slotId)
-      .map(([sId, pId]) => {
-        const otherDef = SLOT_DEFS.find(s => s.id === sId);
-        const p = getPlayer(pId);
-        return { id: pId, label: `${p.confirmed ? '🟢 ' : ''}${p.name} (jugando de ${otherDef.label.toLowerCase()})` };
-      });
-
-    const options = [...benchOptions, ...onFieldOptions];
-
-    if(options.length === 0){
-      list.innerHTML = `<p class="sub">No hay otros jugadores disponibles.</p>`;
-    } else {
-      list.innerHTML = options.map(o =>
-        `<button class="pick" data-id="${o.id}">${o.label}</button>`
-      ).join("");
-      list.querySelectorAll(".pick").forEach(btn => {
-        btn.addEventListener("click", () => doSwap(btn.dataset.id));
-      });
-    }
-    document.getElementById("overlay").classList.add("open");
-  }
-
-  function closeSheet(){
-    document.getElementById("overlay").classList.remove("open");
-    activeSlot = null;
-  }
-
-  function doSwap(incomingId){
-    const def = SLOT_DEFS.find(s => s.id === activeSlot);
-    const outgoingId = state.slots[activeSlot];
-    const outgoing = getPlayer(outgoingId);
-    const incoming = getPlayer(incomingId);
-
-    state.history.push({ slots: structuredClone(state.slots), formation: state.formation });
-
-    const incomingSlotId = Object.keys(state.slots)
-      .find(sId => state.slots[sId] === incomingId);
-
-    if(incomingSlotId){
-      const incomingDef = SLOT_DEFS.find(s => s.id === incomingSlotId);
-      state.slots[incomingSlotId] = outgoingId;
-      state.slots[activeSlot] = incomingId;
-      state.log.push({
-        time: timeNow(),
-        text: `${incoming.name} y ${outgoing.name} intercambian posición (${incomingDef.label} ↔ ${def.label})`
-      });
-    } else {
-      state.slots[activeSlot] = incomingId;
-      state.log.push({
-        time: timeNow(),
-        text: `Entra ${incoming.name} por ${outgoing.name} (${def.label})`
-      });
-    }
-
-    saveState();
-    renderAll();
-    closeSheet();
-  }
-
-  function undoLast(){
-    if(state.history.length === 0){
-      alert("No hay cambios que deshacer.");
-      return;
-    }
-    if(!confirm("¿Deshacer el último cambio?")) return;
-    const last = state.history.pop();
-    state.slots = last.slots;
-    state.formation = last.formation;
-    SLOT_DEFS = buildSlotDefs(state.formation);
-    state.log.pop();
-    saveState();
-    renderAll();
-  }
-
-  function generateShareCardHTML(){
-    const groups = { DEL:[], VOL:[], DEF:[], ARQ:[] };
-    SLOT_DEFS.forEach(d => groups[d.type].push(d.id));
-    const rows = [groups.DEL, groups.VOL, groups.DEF, groups.ARQ].filter(r => r.length > 0);
-
-    const rowsHtml = rows.map(rowIds => {
-      const cells = rowIds.map(slotId => {
-        const def = SLOT_DEFS.find(s => s.id === slotId);
-        const player = getPlayer(state.slots[slotId]);
-        return `<div class="slot border-${def.type}" style="cursor:default;">
-          <span class="tag tag-${def.type}">${def.type}</span>
-          <div class="name">${player.confirmed ? '<span class="dot-confirmed"></span>' : ''}${player.name}</div>
-        </div>`;
-      }).join("");
-      return `<div class="row" style="margin:10px 0;">${cells}</div>`;
-    }).join("");
-
-    const benchHtml = benchIds().map(id => {
-      const p = getPlayer(id);
-      const dot = p.confirmed ? '<span class="dot-confirmed"></span>' : '';
-      const tag = p.tag ? ` · ${p.tag}` : "";
-      return `<span class="chip" style="font-size:11px;">${dot}${p.name}${tag}</span>`;
-    }).join("");
-
-    return `
-      <div style="text-align:center; margin-bottom:10px;">
-        <div style="font-size:16px; font-weight:700;">⚽ Promoción 2004</div>
-        <div style="font-size:11px; color:var(--text-muted);">${MATCH_LABEL} · Formación ${state.formation}</div>
-      </div>
-      <div class="pitch" style="padding:10px 8px 14px;">${rowsHtml}</div>
-      <div style="margin-top:10px;">
-        <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px;">Banca</div>
-        <div class="chips">${benchHtml}</div>
-      </div>
-      <div style="text-align:center; font-size:10px; color:var(--text-muted); margin-top:12px;">
-        Actualizado ${timeNow()}
-      </div>
-    `;
-  }
-
-  async function downloadPNG(){
-    const card = document.getElementById("shareCard");
-    card.innerHTML = generateShareCardHTML();
-    document.getElementById("exportOverlay").classList.add("open");
-
-    await new Promise(r => requestAnimationFrame(r));
-    await new Promise(r => requestAnimationFrame(r));
-
-    try{
-      const canvas = await html2canvas(card, { scale:3, backgroundColor:"#0f1a12" });
-      const dataUrl = canvas.toDataURL("image/png");
-      const stamp = new Date().toISOString().slice(0,16).replace(/[:T]/g,"-");
-      const link = document.createElement("a");
-      link.download = `alineacion_promo2004_${stamp}.png`;
-      link.href = dataUrl;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    }catch(err){
-      alert("No se pudo generar la imagen: " + err.message);
-    }
-
-    document.getElementById("exportOverlay").classList.remove("open");
-  }
-
-  document.getElementById("downloadBtn").addEventListener("click", downloadPNG);
   document.getElementById("addPlayerBtn").addEventListener("click", addNewPlayer);
-  document.getElementById("sheetClose").addEventListener("click", closeSheet);
-  document.getElementById("posSheetClose").addEventListener("click", closePosPicker);
-  document.getElementById("posOverlay").querySelectorAll(".pick").forEach(btn => {
-    btn.addEventListener("click", () => setPosition(btn.dataset.tag));
-  });
-  document.getElementById("posOverlay").addEventListener("click", (e) => {
-    if(e.target.id === "posOverlay") closePosPicker();
-  });
-  document.getElementById("overlay").addEventListener("click", (e) => {
-    if(e.target.id === "overlay") closeSheet();
-  });
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    if(confirm("¿Reiniciar la alineación (formación y posiciones) en este dispositivo? La asistencia no se toca.")){
-      state = structuredClone(DEFAULT_STATE);
-      SLOT_DEFS = buildSlotDefs(state.formation);
-      saveState();
-      renderAll();
-    }
-  });
-  document.getElementById("undoBtn").addEventListener("click", undoLast);
+  initPositionPickerUI();
 
   renderAll();
-  initFirebase();
+  initFirebase(renderAll);
 </script>
 </body>
 </html>
