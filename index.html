@@ -89,6 +89,22 @@
     -webkit-tap-highlight-color:transparent;
   }
   .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip-group{
+    display:inline-flex; align-items:stretch; background:var(--card2);
+    border:1px solid var(--border); border-radius:20px; overflow:hidden;
+  }
+  .chip-name{
+    background:transparent; border:none; color:var(--text); font-size:12.5px;
+    padding:8px 10px; cursor:pointer; -webkit-tap-highlight-color:transparent; font-family:inherit;
+  }
+  .chip-name:active{background:var(--accent-dark);}
+  .chip-pos{
+    background:rgba(255,255,255,.06); border:none; border-left:1px solid var(--border);
+    color:var(--text-muted); font-size:10.5px; font-weight:700; letter-spacing:.3px;
+    padding:8px 9px; cursor:pointer; -webkit-tap-highlight-color:transparent; font-family:inherit;
+  }
+  .chip-pos:active{background:var(--accent-dark); color:var(--text);}
+  .chip-pos.set{color:var(--text);}
   .chip{
     background:var(--card2); border:1px solid var(--border); border-radius:20px;
     padding:8px 12px; font-size:12.5px; color:var(--text);
@@ -196,6 +212,19 @@
   <div class="export-wrap">
     <div id="shareCard" class="share-card"></div>
     <p class="export-hint">Generando imagen…</p>
+  </div>
+</div>
+
+<div class="overlay" id="posOverlay">
+  <div class="sheet">
+    <h3 id="posSheetTitle">Elegir posición</h3>
+    <p class="sub">¿En qué posición juega?</p>
+    <button class="pick" data-tag="ARQ">🧤 Arquero</button>
+    <button class="pick" data-tag="DEF">🛡️ Defensa</button>
+    <button class="pick" data-tag="VOL">🎯 Volante</button>
+    <button class="pick" data-tag="DEL">⚡ Delantero</button>
+    <button class="pick" data-tag="">🤷 Sin definir</button>
+    <button class="close" id="posSheetClose">Cancelar</button>
   </div>
 </div>
 
@@ -322,8 +351,10 @@
   // ============================================================
   let remoteConfirmed = {};    // { playerId: true/false }
   let remoteExtraPlayers = {}; // { playerId: {name, tag} }  -- jugadores agregados en vivo
+  let remotePositions = {};    // { playerId: "ARQ"|"DEF"|"VOL"|"DEL"|"" } -- posición elegida en vivo
   let matchRef = null;
   let firestoreReady = false;
+  let activePosPlayerId = null;
 
   function initFirebase(){
     try{
@@ -336,7 +367,7 @@
         if(!snap.exists){
           const initialConfirmed = {};
           Object.keys(BASE_ROSTER).forEach(id => { initialConfirmed[id] = false; });
-          matchRef.set({ label: MATCH_LABEL, confirmed: initialConfirmed, extraPlayers: {} });
+          matchRef.set({ label: MATCH_LABEL, confirmed: initialConfirmed, extraPlayers: {}, positions: {} });
         }
       });
 
@@ -344,6 +375,7 @@
         const data = snap.data() || {};
         remoteConfirmed = data.confirmed || {};
         remoteExtraPlayers = data.extraPlayers || {};
+        remotePositions = data.positions || {};
         firestoreReady = true;
         setConnStatus(true);
         renderAll();
@@ -370,11 +402,14 @@
 
   function getPlayer(id){
     if(remoteExtraPlayers[id]){
-      return { ...remoteExtraPlayers[id], confirmed: !!remoteConfirmed[id] };
+      const base = remoteExtraPlayers[id];
+      const tag = remotePositions.hasOwnProperty(id) ? remotePositions[id] : (base.tag || "");
+      return { ...base, tag, confirmed: !!remoteConfirmed[id] };
     }
     const base = BASE_ROSTER[id];
     if(!base) return null;
-    return { ...base, confirmed: !!remoteConfirmed[id] };
+    const tag = remotePositions.hasOwnProperty(id) ? remotePositions[id] : base.tag;
+    return { ...base, tag, confirmed: !!remoteConfirmed[id] };
   }
 
   function allRosterIds(){
@@ -387,6 +422,27 @@
     matchRef.update({ [`confirmed.${id}`]: !current }).catch(err => {
       alert("No se pudo guardar: " + err.message);
     });
+  }
+
+  function openPositionPicker(id){
+    if(!matchRef){ alert("Firebase no está configurado todavía."); return; }
+    activePosPlayerId = id;
+    const p = getPlayer(id);
+    document.getElementById("posSheetTitle").textContent = `Posición de ${p.name}`;
+    document.getElementById("posOverlay").classList.add("open");
+  }
+
+  function setPosition(tag){
+    if(!matchRef || !activePosPlayerId) { closePosPicker(); return; }
+    matchRef.update({ [`positions.${activePosPlayerId}`]: tag }).catch(err => {
+      alert("No se pudo guardar: " + err.message);
+    });
+    closePosPicker();
+  }
+
+  function closePosPicker(){
+    document.getElementById("posOverlay").classList.remove("open");
+    activePosPlayerId = null;
   }
 
   function addNewPlayer(){
@@ -414,18 +470,32 @@
   // ============================================================
   // Lista de asistencia (todo el plantel, se anota cada uno)
   // ============================================================
-  function renderRosterList(){
-    const list = document.getElementById("rosterList");
-    const ids = allRosterIds();
-    list.innerHTML = ids.map(id => {
+  function renderRosterChips(containerId, ids){
+    const container = document.getElementById(containerId);
+    if(ids.length === 0){
+      container.innerHTML = `<span class="log-empty">Sin jugadores</span>`;
+      return;
+    }
+    container.innerHTML = ids.map(id => {
       const p = getPlayer(id);
       const dot = p.confirmed ? '<span class="dot-confirmed"></span>' : '';
-      const tag = p.tag ? ` · ${p.tag}` : "";
-      return `<button class="chip chip-toggle" data-id="${id}" type="button">${dot}${p.name}${tag}</button>`;
+      const posLabel = p.tag ? p.tag : "＋ pos";
+      const posClass = p.tag ? "chip-pos set" : "chip-pos";
+      return `<span class="chip-group">
+        <button class="chip-name" data-id="${id}" type="button">${dot}${p.name}</button>
+        <button class="${posClass}" data-id="${id}" type="button">${posLabel}</button>
+      </span>`;
     }).join("");
-    list.querySelectorAll(".chip-toggle").forEach(btn => {
+    container.querySelectorAll(".chip-name").forEach(btn => {
       btn.addEventListener("click", () => toggleConfirmed(btn.dataset.id));
     });
+    container.querySelectorAll(".chip-pos").forEach(btn => {
+      btn.addEventListener("click", () => openPositionPicker(btn.dataset.id));
+    });
+  }
+
+  function renderRosterList(){
+    renderRosterChips("rosterList", allRosterIds());
   }
 
   function renderPitch(){
@@ -460,21 +530,7 @@
   }
 
   function renderBench(){
-    const bench = document.getElementById("bench");
-    const ids = benchIds();
-    if(ids.length === 0){
-      bench.innerHTML = `<span class="log-empty">Sin jugadores en banca</span>`;
-    } else {
-      bench.innerHTML = ids.map(id => {
-        const p = getPlayer(id);
-        const tag = p.tag ? ` · ${p.tag}` : "";
-        const dot = p.confirmed ? '<span class="dot-confirmed"></span>' : '';
-        return `<button class="chip chip-toggle" data-id="${id}" type="button">${dot}${p.name}${tag}</button>`;
-      }).join("");
-      bench.querySelectorAll(".chip-toggle").forEach(btn => {
-        btn.addEventListener("click", () => toggleConfirmed(btn.dataset.id));
-      });
-    }
+    renderRosterChips("bench", benchIds());
   }
 
   function renderLog(){
@@ -761,6 +817,13 @@
   document.getElementById("downloadBtn").addEventListener("click", downloadPNG);
   document.getElementById("addPlayerBtn").addEventListener("click", addNewPlayer);
   document.getElementById("sheetClose").addEventListener("click", closeSheet);
+  document.getElementById("posSheetClose").addEventListener("click", closePosPicker);
+  document.getElementById("posOverlay").querySelectorAll(".pick").forEach(btn => {
+    btn.addEventListener("click", () => setPosition(btn.dataset.tag));
+  });
+  document.getElementById("posOverlay").addEventListener("click", (e) => {
+    if(e.target.id === "posOverlay") closePosPicker();
+  });
   document.getElementById("overlay").addEventListener("click", (e) => {
     if(e.target.id === "overlay") closeSheet();
   });
