@@ -53,9 +53,84 @@ const BASE_ROSTER = {
 let remoteConfirmed = {};    // { playerId: true/false }
 let remoteExtraPlayers = {}; // { playerId: {name, tag} } -- jugadores agregados en vivo
 let remotePositions = {};    // { playerId: "ARQ"|"DEF"|"VOL"|"DEL"|"" } -- posición elegida en vivo
+let remoteConfirmedBy = {};  // { playerId: actorId } -- quién tocó el punto verde por última vez
 let matchRef = null;
 let activePosPlayerId = null;
 let onMatchUpdate = null; // callback que define cada página (qué re-renderizar)
+
+// ============================================================
+// Identidad del dispositivo: quién soy yo en este celular.
+// Se guarda una sola vez en localStorage (no es login real,
+// pero deja rastro de quién tocó cada cosa).
+// ============================================================
+const WHOAMI_KEY = "promo2004_who_am_i";
+
+function getDeviceId(){
+  return localStorage.getItem(WHOAMI_KEY);
+}
+
+function setDeviceId(id){
+  localStorage.setItem(WHOAMI_KEY, id);
+}
+
+function openWhoOverlay(){
+  const list = document.getElementById("whoList");
+  if(!list) return;
+  const ids = [...allRosterIds()].sort((a, b) =>
+    getPlayer(a).name.localeCompare(getPlayer(b).name, "es")
+  );
+  list.innerHTML = ids.map(id =>
+    `<button class="pick" data-id="${id}">${getPlayer(id).name}</button>`
+  ).join("");
+  list.querySelectorAll(".pick").forEach(btn => {
+    btn.addEventListener("click", () => chooseIdentity(btn.dataset.id));
+  });
+  document.getElementById("whoOverlay").classList.add("open");
+}
+
+function chooseIdentity(id){
+  setDeviceId(id);
+  document.getElementById("whoOverlay").classList.remove("open");
+  renderWhoamiLine();
+  if(onMatchUpdate) onMatchUpdate();
+}
+
+function chooseAnonymous(){
+  setDeviceId("anon");
+  document.getElementById("whoOverlay").classList.remove("open");
+  renderWhoamiLine();
+  if(onMatchUpdate) onMatchUpdate();
+}
+
+function renderWhoamiLine(){
+  const el = document.getElementById("whoamiLine");
+  if(!el) return;
+  const me = getDeviceId();
+  if(!me){
+    el.innerHTML = "";
+    return;
+  }
+  const label = me === "anon" ? "Sin identificar" : (getPlayer(me) ? getPlayer(me).name : "Sin identificar");
+  el.innerHTML = `Estás anotando como <strong>${label}</strong> · <button class="who-change" id="whoChangeBtn" type="button">cambiar</button>`;
+  document.getElementById("whoChangeBtn").addEventListener("click", openWhoOverlay);
+}
+
+function initWhoAmI(){
+  renderWhoamiLine();
+  if(!getDeviceId()){
+    openWhoOverlay();
+  }
+}
+
+// Antes de tocar la asistencia/posición de OTRO jugador, confirma.
+// Si actúas sobre ti mismo (o no hay identidad aún), no molesta.
+function confirmActingForOther(targetId){
+  const me = getDeviceId();
+  if(!me || me === targetId) return true;
+  const meName = me === "anon" ? "sin identificar" : (getPlayer(me) ? getPlayer(me).name : "sin identificar");
+  const targetName = getPlayer(targetId).name;
+  return confirm(`Te anotaste como ${meName}. Estás por cambiar a ${targetName}, no a ti. ¿Seguro que quieres continuar?`);
+}
 
 function initFirebase(callback){
   onMatchUpdate = callback;
@@ -69,7 +144,7 @@ function initFirebase(callback){
       if(!snap.exists){
         const initialConfirmed = {};
         Object.keys(BASE_ROSTER).forEach(id => { initialConfirmed[id] = false; });
-        matchRef.set({ label: MATCH_LABEL, confirmed: initialConfirmed, extraPlayers: {}, positions: {} });
+        matchRef.set({ label: MATCH_LABEL, confirmed: initialConfirmed, extraPlayers: {}, positions: {}, confirmedBy: {} });
       }
     });
 
@@ -78,6 +153,7 @@ function initFirebase(callback){
       remoteConfirmed = data.confirmed || {};
       remoteExtraPlayers = data.extraPlayers || {};
       remotePositions = data.positions || {};
+      remoteConfirmedBy = data.confirmedBy || {};
       setConnStatus(true);
       if(onMatchUpdate) onMatchUpdate();
     }, err => {
@@ -106,22 +182,55 @@ function getPlayer(id){
   if(remoteExtraPlayers[id]){
     const base = remoteExtraPlayers[id];
     const tag = remotePositions.hasOwnProperty(id) ? remotePositions[id] : (base.tag || "");
-    return { ...base, tag, confirmed: !!remoteConfirmed[id] };
+    return { ...base, tag, confirmed: !!remoteConfirmed[id], confirmedByLabel: getConfirmedByLabel(id) };
   }
   const base = BASE_ROSTER[id];
   if(!base) return null;
   const tag = remotePositions.hasOwnProperty(id) ? remotePositions[id] : base.tag;
-  return { ...base, tag, confirmed: !!remoteConfirmed[id] };
+  return { ...base, tag, confirmed: !!remoteConfirmed[id], confirmedByLabel: getConfirmedByLabel(id) };
+}
+
+function getConfirmedByLabel(id){
+  const actorId = remoteConfirmedBy[id];
+  if(!actorId || actorId === id) return null; // se marcó a sí mismo, no hace falta aclarar
+  if(actorId === "anon") return "alguien sin identificar";
+  const actor = BASE_ROSTER[actorId] || remoteExtraPlayers[actorId];
+  return actor ? actor.name : null;
 }
 
 function allRosterIds(){
   return [...Object.keys(BASE_ROSTER), ...Object.keys(remoteExtraPlayers)];
 }
 
+// Orden: primero los confirmados (🟢), luego por posición en cancha
+// (Arquero → Defensa → Volante → Delantero → sin definir), y por
+// último alfabético dentro de cada grupo.
+const POSITION_ORDER = { ARQ:0, DEF:1, VOL:2, DEL:3, "":4 };
+
+function sortRoster(ids){
+  return [...ids].sort((a, b) => {
+    const pa = getPlayer(a), pb = getPlayer(b);
+    const confA = pa.confirmed ? 0 : 1;
+    const confB = pb.confirmed ? 0 : 1;
+    if(confA !== confB) return confA - confB;
+
+    const posA = POSITION_ORDER.hasOwnProperty(pa.tag) ? POSITION_ORDER[pa.tag] : 4;
+    const posB = POSITION_ORDER.hasOwnProperty(pb.tag) ? POSITION_ORDER[pb.tag] : 4;
+    if(posA !== posB) return posA - posB;
+
+    return pa.name.localeCompare(pb.name, "es");
+  });
+}
+
 function toggleConfirmed(id){
   if(!matchRef){ alert("Firebase no está configurado todavía."); return; }
+  if(!confirmActingForOther(id)) return;
   const current = !!remoteConfirmed[id];
-  matchRef.update({ [`confirmed.${id}`]: !current }).catch(err => {
+  const me = getDeviceId() || "anon";
+  matchRef.update({
+    [`confirmed.${id}`]: !current,
+    [`confirmedBy.${id}`]: me
+  }).catch(err => {
     alert("No se pudo guardar: " + err.message);
   });
 }
@@ -136,6 +245,7 @@ function openPositionPicker(id){
 
 function setPosition(tag){
   if(!matchRef || !activePosPlayerId) { closePosPicker(); return; }
+  if(!confirmActingForOther(activePosPlayerId)){ closePosPicker(); return; }
   matchRef.update({ [`positions.${activePosPlayerId}`]: tag }).catch(err => {
     alert("No se pudo guardar: " + err.message);
   });
@@ -178,8 +288,11 @@ function renderRosterChips(containerId, ids){
     const dot = p.confirmed ? '<span class="dot-confirmed"></span>' : '';
     const posLabel = p.tag ? p.tag : "＋ pos";
     const posClass = p.tag ? "chip-pos set" : "chip-pos";
+    const byNote = p.confirmed && p.confirmedByLabel
+      ? `<span class="by-note"> · marcó ${p.confirmedByLabel}</span>`
+      : "";
     return `<span class="chip-group">
-      <button class="chip-name" data-id="${id}" type="button">${dot}${p.name}</button>
+      <button class="chip-name" data-id="${id}" type="button">${dot}${p.name}${byNote}</button>
       <button class="${posClass}" data-id="${id}" type="button">${posLabel}</button>
     </span>`;
   }).join("");
