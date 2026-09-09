@@ -31,6 +31,12 @@
   header p{font-size:12px; color:var(--text-muted); margin:0;}
   header .status{font-size:10.5px; color:var(--text-muted); margin-top:4px;}
   header .status.live{color:var(--accent);}
+  header .whoami{font-size:10.5px; color:var(--text-muted); margin-top:4px;}
+  .who-change{
+    background:none; border:none; color:var(--accent); font-size:10.5px;
+    text-decoration:underline; cursor:pointer; padding:0; font-family:inherit;
+  }
+  .by-note{color:var(--text-muted); font-weight:400; font-size:10.5px;}
   .wrap{max-width:480px; margin:0 auto; padding:12px;}
 
   section.panel{
@@ -101,6 +107,7 @@
   <h1>⚽ Promoción 2004</h1>
   <p>Fútbol 6 · Complejo · Sáb 12/09 · 7:00 pm · 5ta fecha</p>
   <p class="status" id="connStatus">Conectando…</p>
+  <p class="whoami" id="whoamiLine"></p>
 </header>
 
 <div class="wrap">
@@ -116,6 +123,15 @@
     <div class="chips" id="rosterList"></div>
   </section>
 
+</div>
+
+<div class="overlay" id="whoOverlay">
+  <div class="sheet">
+    <h3>¿Quién eres?</h3>
+    <p class="sub">Así avisamos si alguien más te marca por error. Puedes cambiarlo cuando quieras.</p>
+    <div id="whoList"></div>
+    <button class="close" id="whoAnonBtn">Prefiero no decir</button>
+  </div>
 </div>
 
 <div class="overlay" id="posOverlay">
@@ -137,11 +153,13 @@
 <script src="shared.js"></script>
 <script>
   function renderAll(){
-    renderRosterChips("rosterList", allRosterIds());
+    renderRosterChips("rosterList", sortRoster(allRosterIds()));
   }
 
   document.getElementById("addPlayerBtn").addEventListener("click", addNewPlayer);
+  document.getElementById("whoAnonBtn").addEventListener("click", chooseAnonymous);
   initPositionPickerUI();
+  initWhoAmI();
 
   renderAll();
   initFirebase(renderAll);
