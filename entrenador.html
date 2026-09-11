@@ -216,7 +216,11 @@
   </section>
 
   <section class="panel">
-    <h2>Cambios del partido</h2>
+    <div class="panel-head">
+      <h2>Cambios del partido</h2>
+      <button class="add-btn" id="clearLogBtn" type="button">Vaciar</button>
+    </div>
+    <p id="logHint" style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;"></p>
     <div class="log" id="log"></div>
   </section>
 
@@ -309,7 +313,8 @@
     formation:"1-2-2",
     slots:{ ARQ:"p14", DEF1:"p10", DEF2:"p16", VOL1:"p7", VOL2:"p15", DEL1:"p11" },
     log:[],
-    history:[]
+    history:[],
+    logFrozen:false
   };
 
   const STORAGE_KEY = `promo2004_lineup_${MATCH_ID}`;
@@ -322,6 +327,7 @@
       if(!parsed.slots) return structuredClone(DEFAULT_STATE);
       if(!parsed.history) parsed.history = [];
       if(!parsed.log) parsed.log = [];
+      if(typeof parsed.logFrozen !== "boolean") parsed.logFrozen = false;
       if(!parsed.formation || !FORMATIONS[parsed.formation]) parsed.formation = "1-2-2";
       const expected = buildSlotDefs(parsed.formation).map(d => d.id);
       const valid = expected.every(id => parsed.slots[id]);
@@ -384,6 +390,12 @@
   }
 
   function renderLog(){
+    const hint = document.getElementById("logHint");
+    if(hint){
+      hint.textContent = state.logFrozen
+        ? "Registro vaciado: desde acá solo se anota si pones a alguien sin confirmar."
+        : "Se anota cada cambio que hagas arriba.";
+    }
     const log = document.getElementById("log");
     if(state.log.length === 0){
       log.innerHTML = `<span class="log-empty">Todavía no hay cambios registrados</span>`;
@@ -413,7 +425,8 @@
     if(newKey === state.formation) return;
     const oldOutfieldIds = SLOT_DEFS.filter(d => d.type !== "ARQ").map(d => state.slots[d.id]);
 
-    state.history.push({ slots: structuredClone(state.slots), formation: state.formation });
+    const willLog = !state.logFrozen;
+    state.history.push({ slots: structuredClone(state.slots), formation: state.formation, logged: willLog });
 
     const oldKey = state.formation;
     state.formation = newKey;
@@ -424,7 +437,9 @@
     newOutfieldDefs.forEach((d, i) => { newSlots[d.id] = oldOutfieldIds[i]; });
     state.slots = newSlots;
 
-    state.log.push({ time: timeNow(), text: `Cambio de formación: ${oldKey} → ${newKey}` });
+    if(willLog){
+      state.log.push({ time: timeNow(), text: `Cambio de formación: ${oldKey} → ${newKey}` });
+    }
 
     saveState();
     renderAll();
@@ -499,13 +514,16 @@
     const playerA = getPlayer(playerAId);
     const playerB = getPlayer(playerBId);
 
-    state.history.push({ slots: structuredClone(state.slots), formation: state.formation });
+    const willLog = !state.logFrozen;
+    state.history.push({ slots: structuredClone(state.slots), formation: state.formation, logged: willLog });
     state.slots[slotA] = playerBId;
     state.slots[slotB] = playerAId;
-    state.log.push({
-      time: timeNow(),
-      text: `${playerA.name} y ${playerB.name} intercambian posición (${defA.label} ↔ ${defB.label})`
-    });
+    if(willLog){
+      state.log.push({
+        time: timeNow(),
+        text: `${playerA.name} y ${playerB.name} intercambian posición (${defA.label} ↔ ${defB.label})`
+      });
+    }
 
     saveState();
     renderAll();
@@ -558,25 +576,30 @@
     const outgoing = getPlayer(outgoingId);
     const incoming = getPlayer(incomingId);
 
-    state.history.push({ slots: structuredClone(state.slots), formation: state.formation });
+    if(!incoming.confirmed && !confirm(`${incoming.name} no está marcado como confirmado que viene. ¿Igual lo pones?`)){
+      return;
+    }
+
+    const willLog = !state.logFrozen || !incoming.confirmed;
+    state.history.push({ slots: structuredClone(state.slots), formation: state.formation, logged: willLog });
 
     const incomingSlotId = Object.keys(state.slots)
       .find(sId => state.slots[sId] === incomingId);
 
+    let entryText;
     if(incomingSlotId){
       const incomingDef = SLOT_DEFS.find(s => s.id === incomingSlotId);
       state.slots[incomingSlotId] = outgoingId;
       state.slots[activeSlot] = incomingId;
-      state.log.push({
-        time: timeNow(),
-        text: `${incoming.name} y ${outgoing.name} intercambian posición (${incomingDef.label} ↔ ${def.label})`
-      });
+      entryText = `${incoming.name} y ${outgoing.name} intercambian posición (${incomingDef.label} ↔ ${def.label})`;
     } else {
       state.slots[activeSlot] = incomingId;
-      state.log.push({
-        time: timeNow(),
-        text: `Entra ${incoming.name} por ${outgoing.name} (${def.label})`
-      });
+      entryText = `Entra ${incoming.name} por ${outgoing.name} (${def.label})`;
+    }
+
+    if(willLog){
+      if(!incoming.confirmed) entryText = `⚠️ ${entryText} — sin confirmar`;
+      state.log.push({ time: timeNow(), text: entryText });
     }
 
     saveState();
@@ -594,7 +617,15 @@
     state.slots = last.slots;
     state.formation = last.formation;
     SLOT_DEFS = buildSlotDefs(state.formation);
-    state.log.pop();
+    if(last.logged) state.log.pop();
+    saveState();
+    renderAll();
+  }
+
+  function clearChangeLog(){
+    if(!confirm("¿Vaciar el registro de \"Cambios del partido\"? La alineación de arriba no se toca; desde ahora solo se anotará si pones a alguien sin confirmar.")) return;
+    state.log = [];
+    state.logFrozen = true;
     saveState();
     renderAll();
   }
@@ -681,6 +712,7 @@
     }
   });
   document.getElementById("undoBtn").addEventListener("click", undoLast);
+  document.getElementById("clearLogBtn").addEventListener("click", clearChangeLog);
   initWhoAmI();
 
   renderAll();
