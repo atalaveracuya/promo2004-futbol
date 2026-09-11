@@ -202,7 +202,7 @@ function allRosterIds(){
   return [...Object.keys(BASE_ROSTER), ...Object.keys(remoteExtraPlayers)];
 }
 
-// Orden: primero los confirmados (🟢), luego por posición en cancha
+// Orden: primero los confirmados (🔥), luego por posición en cancha
 // (Arquero → Defensa → Volante → Delantero → sin definir), y por
 // último alfabético dentro de cada grupo.
 const POSITION_ORDER = { ARQ:0, DEF:1, VOL:2, DEL:3, "":4 };

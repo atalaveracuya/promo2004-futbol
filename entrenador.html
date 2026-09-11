@@ -15,10 +15,10 @@
 <meta name="twitter:card" content="summary_large_image">
 <style>
   :root{
-    --bg:#0f1a12; --card:#16241a; --card2:#1d2f22; --accent:#3ba26a;
-    --accent-dark:#256b46; --text:#eef3ee; --text-muted:#9fb3a6;
-    --border:#2a3f30; --danger:#c65b4e; --amber:#c98f3a; --blue:#3d7fbf;
-    --coral:#c9634a; --teal:#3ba296; --gray:#5f6f64;
+    --bg:#15100b; --card:#241a10; --card2:#2e2114; --accent:#e2a730;
+    --accent-dark:#a97a1f; --text:#f6efe1; --text-muted:#b7a58c;
+    --border:#3c2c1a; --danger:#c65b4e; --amber:#7c8f5a; --blue:#6f93b8;
+    --coral:#b85a45; --teal:#4fa79a; --gray:#5f6f64;
   }
   *{box-sizing:border-box;}
   body{
@@ -64,7 +64,7 @@
     -webkit-tap-highlight-color:transparent; text-align:left; line-height:1.3;
   }
   .chip-btn strong{color:var(--text); font-weight:700; display:block; font-size:13px;}
-  .chip-btn.active{border-color:var(--accent); background:rgba(59,162,106,.15); color:var(--text);}
+  .chip-btn.active{border-color:var(--accent); background:rgba(226,167,48,.15); color:var(--text);}
   .slot:active{transform:scale(0.96);}
   .slot.dragging{opacity:.35;}
   .slot.drop-target{outline:2px solid var(--accent); outline-offset:2px;}
@@ -82,14 +82,14 @@
     display:inline-block; margin-right:4px; vertical-align:middle;
     font-size:12px;
   }
-  .tag-ARQ{background:rgba(61,127,191,.18); color:#8fc0f2;}
-  .tag-DEF{background:rgba(201,143,58,.18); color:#f0c17e;}
-  .tag-VOL{background:rgba(59,162,150,.18); color:#7fd8c9;}
-  .tag-DEL{background:rgba(201,99,74,.18); color:#f0a08c;}
-  .border-ARQ{border-color:#3d7fbf;}
-  .border-DEF{border-color:#c98f3a;}
-  .border-VOL{border-color:#3ba296;}
-  .border-DEL{border-color:#c9634a;}
+  .tag-ARQ{background:rgba(111,147,184,.18); color:#b0c4d8;}
+  .tag-DEF{background:rgba(124,143,90,.18); color:#b7c1a4;}
+  .tag-VOL{background:rgba(79,167,154,.18); color:#9ecfc7;}
+  .tag-DEL{background:rgba(184,90,69,.18); color:#d8a499;}
+  .border-ARQ{border-color:#6f93b8;}
+  .border-DEF{border-color:#7c8f5a;}
+  .border-VOL{border-color:#4fa79a;}
+  .border-DEL{border-color:#b85a45;}
 
   section.panel{
     background:var(--card); border:1px solid var(--border); border-radius:14px;
@@ -99,7 +99,7 @@
   .panel-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
   .panel-head h2{margin:0;}
   .add-btn{
-    background:var(--accent); color:#08170f; border:none; border-radius:20px;
+    background:var(--accent); color:#17110a; border:none; border-radius:20px;
     padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer;
     -webkit-tap-highlight-color:transparent;
   }
@@ -138,7 +138,7 @@
     background:var(--card2); color:var(--text); font-size:13px; font-weight:600;
     cursor:pointer; -webkit-tap-highlight-color:transparent;
   }
-  .btn.primary{background:var(--accent); border-color:var(--accent-dark); color:#08170f;}
+  .btn.primary{background:var(--accent); border-color:var(--accent-dark); color:#17110a;}
   .btn:active{opacity:.8;}
   .log{max-height:160px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;}
   .log-item{font-size:12px; color:var(--text-muted); border-left:2px solid var(--accent); padding-left:8px;}
@@ -189,7 +189,7 @@
       <button class="add-btn" id="addPlayerBtn" type="button">+ Agregar</button>
     </div>
     <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">
-      Toca tu nombre para anotarte 🟢. Se guarda para todos, en vivo.
+      Toca tu nombre para anotarte 🔥. Se guarda para todos, en vivo.
     </p>
     <div class="chips" id="rosterList"></div>
   </section>
@@ -205,7 +205,7 @@
     <div class="panel-head">
       <h2>Banca</h2>
     </div>
-    <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">Toca a un jugador para marcar/quitar su llegada 🟢</p>
+    <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">Toca a un jugador para marcar/quitar su llegada 🔥</p>
     <div class="chips" id="bench"></div>
   </section>
 
@@ -515,7 +515,7 @@
 
     const benchOptions = benchIds().map(id => {
       const p = getPlayer(id);
-      return { id, label: `${p.confirmed ? '🟢 ' : ''}${p.name}${p.tag ? " (" + p.tag + ")" : ""}` };
+      return { id, label: `${p.confirmed ? '🔥 ' : ''}${p.name}${p.tag ? " (" + p.tag + ")" : ""}` };
     });
 
     const onFieldOptions = Object.entries(state.slots)
@@ -523,7 +523,7 @@
       .map(([sId, pId]) => {
         const otherDef = SLOT_DEFS.find(s => s.id === sId);
         const p = getPlayer(pId);
-        return { id: pId, label: `${p.confirmed ? '🟢 ' : ''}${p.name} (jugando de ${otherDef.label.toLowerCase()})` };
+        return { id: pId, label: `${p.confirmed ? '🔥 ' : ''}${p.name} (jugando de ${otherDef.label.toLowerCase()})` };
       });
 
     const options = [...benchOptions, ...onFieldOptions];
@@ -642,7 +642,7 @@
     await new Promise(r => requestAnimationFrame(r));
 
     try{
-      const canvas = await html2canvas(card, { scale:3, backgroundColor:"#0f1a12" });
+      const canvas = await html2canvas(card, { scale:3, backgroundColor:"#15100b" });
       const dataUrl = canvas.toDataURL("image/png");
       const stamp = new Date().toISOString().slice(0,16).replace(/[:T]/g,"-");
       const link = document.createElement("a");
