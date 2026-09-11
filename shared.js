@@ -18,7 +18,7 @@ const FIREBASE_CONFIG = {
 };
 
 const MATCH_ID = "2026-09-12";
-const MATCH_LABEL = "Sáb 12/09 · 7:00 pm · 5ta fecha";
+const MATCH_LABEL = "Sáb 12/09 · 7:40 pm · 5ta fecha";
 
 // Roster base: id, nombre, posición de referencia (tag).
 // El estado "confirmed" y la posición elegida en vivo viven en Firestore.
