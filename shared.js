@@ -268,6 +268,20 @@ function addNewPlayer(){
   }).catch(err => alert("No se pudo guardar: " + err.message));
 }
 
+// Solo se puede quitar a un jugador agregado en vivo (extraPlayers),
+// no a los 22 del roster fijo.
+function removeExtraPlayer(id){
+  if(!matchRef || !remoteExtraPlayers[id]) return;
+  const name = remoteExtraPlayers[id].name;
+  if(!confirm(`¿Quitar a ${name} de la lista? No se puede deshacer.`)) return;
+  matchRef.update({
+    [`extraPlayers.${id}`]: firebase.firestore.FieldValue.delete(),
+    [`confirmed.${id}`]: firebase.firestore.FieldValue.delete(),
+    [`positions.${id}`]: firebase.firestore.FieldValue.delete(),
+    [`confirmedBy.${id}`]: firebase.firestore.FieldValue.delete()
+  }).catch(err => alert("No se pudo quitar: " + err.message));
+}
+
 function timeNow(){
   return new Date().toLocaleTimeString("es-PE",{hour:"2-digit",minute:"2-digit"});
 }
@@ -291,13 +305,20 @@ function renderRosterChips(containerId, ids){
     const byNote = p.confirmed && p.confirmedByLabel
       ? `<span class="by-note"> · marcó ${p.confirmedByLabel}</span>`
       : "";
+    const removeBtn = remoteExtraPlayers[id]
+      ? `<button class="chip-remove" data-id="${id}" type="button" aria-label="Quitar ${p.name}">✕</button>`
+      : "";
     return `<span class="chip-group">
       <button class="chip-name" data-id="${id}" type="button">${dot}${p.name}${byNote}</button>
       <button class="${posClass}" data-id="${id}" type="button">${posLabel}</button>
+      ${removeBtn}
     </span>`;
   }).join("");
   container.querySelectorAll(".chip-name").forEach(btn => {
     btn.addEventListener("click", () => toggleConfirmed(btn.dataset.id));
+  });
+  container.querySelectorAll(".chip-remove").forEach(btn => {
+    btn.addEventListener("click", () => removeExtraPlayer(btn.dataset.id));
   });
   container.querySelectorAll(".chip-pos").forEach(btn => {
     btn.addEventListener("click", () => openPositionPicker(btn.dataset.id));
