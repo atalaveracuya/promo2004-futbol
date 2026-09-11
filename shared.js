@@ -285,7 +285,7 @@ function renderRosterChips(containerId, ids){
   }
   container.innerHTML = ids.map(id => {
     const p = getPlayer(id);
-    const dot = p.confirmed ? '<span class="dot-confirmed"></span>' : '';
+    const dot = p.confirmed ? '<span class="dot-confirmed">🔥</span>' : '';
     const posLabel = p.tag ? p.tag : "＋ pos";
     const posClass = p.tag ? "chip-pos set" : "chip-pos";
     const byNote = p.confirmed && p.confirmedByLabel

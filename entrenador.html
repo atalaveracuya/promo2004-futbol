@@ -79,8 +79,8 @@
   .slot .name{font-size:12.5px; font-weight:600; line-height:1.25;}
   .slot .hint{font-size:10px; color:var(--text-muted); margin-top:2px;}
   .dot-confirmed{
-    display:inline-block; width:7px; height:7px; border-radius:50%;
-    background:#3ba26a; margin-right:5px; vertical-align:middle;
+    display:inline-block; margin-right:4px; vertical-align:middle;
+    font-size:12px;
   }
   .tag-ARQ{background:rgba(61,127,191,.18); color:#8fc0f2;}
   .tag-DEF{background:rgba(201,143,58,.18); color:#f0c17e;}
@@ -363,7 +363,7 @@
         el.setAttribute("aria-label", `${def.label}: ${player.name}. Mantén presionado y arrastra para cambiar de posición, o toca para sustituir.`);
         el.innerHTML = `
           <span class="tag tag-${def.type}">${def.type}</span>
-          <div class="name">${player.confirmed ? '<span class="dot-confirmed"></span>' : ''}${player.name}</div>
+          <div class="name">${player.confirmed ? '<span class="dot-confirmed">🔥</span>' : ''}${player.name}</div>
           <div class="hint">arrastra o toca</div>
         `;
         attachSlotEvents(el, slotId);
@@ -604,7 +604,7 @@
         const player = getPlayer(state.slots[slotId]);
         return `<div class="slot border-${def.type}" style="cursor:default;">
           <span class="tag tag-${def.type}">${def.type}</span>
-          <div class="name">${player.confirmed ? '<span class="dot-confirmed"></span>' : ''}${player.name}</div>
+          <div class="name">${player.confirmed ? '<span class="dot-confirmed">🔥</span>' : ''}${player.name}</div>
         </div>`;
       }).join("");
       return `<div class="row" style="margin:10px 0;">${cells}</div>`;
@@ -612,7 +612,7 @@
 
     const benchHtml = benchIds().map(id => {
       const p = getPlayer(id);
-      const dot = p.confirmed ? '<span class="dot-confirmed"></span>' : '';
+      const dot = p.confirmed ? '<span class="dot-confirmed">🔥</span>' : '';
       const tag = p.tag ? ` · ${p.tag}` : "";
       return `<span class="chip" style="font-size:11px;">${dot}${p.name}${tag}</span>`;
     }).join("");
