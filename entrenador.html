@@ -393,7 +393,7 @@
     const hint = document.getElementById("logHint");
     if(hint){
       hint.textContent = state.logFrozen
-        ? "Registro vaciado: desde acá solo se anota si pones a alguien sin confirmar."
+        ? "Registro vaciado: acomodar posiciones o formación ya no anota nada; \"Cambiar\" jugador sí sigue anotando."
         : "Se anota cada cambio que hagas arriba.";
     }
     const log = document.getElementById("log");
@@ -580,8 +580,9 @@
       return;
     }
 
-    const willLog = !state.logFrozen || !incoming.confirmed;
-    state.history.push({ slots: structuredClone(state.slots), formation: state.formation, logged: willLog });
+    // Un cambio de jugador siempre se anota (aunque el registro esté "vaciado"):
+    // acomodar posiciones/formación es ajuste, pero esto es un cambio real.
+    state.history.push({ slots: structuredClone(state.slots), formation: state.formation, logged: true });
 
     const incomingSlotId = Object.keys(state.slots)
       .find(sId => state.slots[sId] === incomingId);
@@ -597,10 +598,8 @@
       entryText = `Entra ${incoming.name} por ${outgoing.name} (${def.label})`;
     }
 
-    if(willLog){
-      if(!incoming.confirmed) entryText = `⚠️ ${entryText} — sin confirmar`;
-      state.log.push({ time: timeNow(), text: entryText });
-    }
+    if(!incoming.confirmed) entryText = `⚠️ ${entryText} — sin confirmar`;
+    state.log.push({ time: timeNow(), text: entryText });
 
     saveState();
     renderAll();
@@ -623,7 +622,7 @@
   }
 
   function clearChangeLog(){
-    if(!confirm("¿Vaciar el registro de \"Cambios del partido\"? La alineación de arriba no se toca; desde ahora solo se anotará si pones a alguien sin confirmar.")) return;
+    if(!confirm("¿Vaciar el registro de \"Cambios del partido\"? La alineación de arriba no se toca. Desde ahora, acomodar posiciones o formación no anota nada; usar \"Cambiar\" para meter a alguien sí sigue anotando.")) return;
     state.log = [];
     state.logFrozen = true;
     saveState();
