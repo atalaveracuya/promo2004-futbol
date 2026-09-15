@@ -337,6 +337,11 @@
       </div>
     </details>
 
+    <button class="btn primary" id="importHistoricalBtn" style="margin-top:14px; width:100%;">Importar tabla histórica (1ra a 5ta fecha)</button>
+    <p style="font-size:10.5px; color:var(--text-muted); margin-top:6px;">
+      Guarda de una sola vez la fila de Promoción 2004 de las tablas oficiales que ya salieron (1ra a 5ta fecha), para que quede compartido con todos en Firestore.
+    </p>
+
     <div style="margin-top:14px;">
       <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px;">Evolución en la tabla</div>
       <div class="log" id="officialProgression"></div>
@@ -1059,6 +1064,20 @@
     }
   }
 
+  // Guarda la tabla histórica de arriba en Firestore de una sola vez,
+  // para que quede compartida (no solo como respaldo en este dispositivo).
+  function importHistoricalOfficialTable(){
+    if(!statsCollectionRef || !statsMatchRef){ alert("Firebase no está configurado todavía."); return; }
+    if(!confirm("¿Guardar en Firestore la tabla oficial de la 1ra a la 5ta fecha? Esto sobrescribe lo que haya guardado para esas fechas.")) return;
+    const writes = HISTORICAL_OFFICIAL_TABLE.map(f =>
+      statsCollectionRef.doc(f.id).set({ label: f.label, officialTable: f.officialTable }, { merge:true })
+    );
+    writes.push(statsMatchRef.set({ officialTable: CURRENT_FECHA_OFFICIAL_TABLE }, { merge:true }));
+    Promise.all(writes)
+      .then(() => alert("Tabla histórica guardada."))
+      .catch(err => alert("No se pudo guardar: " + err.message));
+  }
+
   function saveBackfillFecha(){
     const id = document.getElementById("backfillId").value.trim();
     const label = document.getElementById("backfillLabel").value.trim();
@@ -1108,6 +1127,7 @@
     document.getElementById(elId).addEventListener("change", (e) => updateOfficialField(field, e.target.value));
   });
   document.getElementById("saveBackfillBtn").addEventListener("click", saveBackfillFecha);
+  document.getElementById("importHistoricalBtn").addEventListener("click", importHistoricalOfficialTable);
 
   document.getElementById("golesFavorInput").addEventListener("change", (e) => updateResult("golesFavor", e.target.value));
   document.getElementById("golesContraInput").addEventListener("change", (e) => updateResult("golesContra", e.target.value));
