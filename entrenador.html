@@ -197,6 +197,53 @@
   .log-item{font-size:12px; color:var(--text-muted); border-left:2px solid var(--accent); padding-left:8px;}
   .log-empty{font-size:12px; color:var(--text-muted); font-style:italic;}
 
+  .standings-toggle{
+    width:100%; background:none; border:none; padding:0; margin:0;
+    display:flex; align-items:center; justify-content:space-between;
+    cursor:pointer; -webkit-tap-highlight-color:transparent; font-family:inherit;
+  }
+  .standings-toggle h2{margin:0;}
+  .standings-toggle .chev{color:var(--text-muted); font-size:11px; transition:transform .15s ease;}
+  .standings-toggle[aria-expanded="true"] .chev{transform:rotate(180deg);}
+  #standingsBody{margin-top:12px;}
+  .standings-row{display:flex; flex-wrap:wrap; gap:14px; margin-bottom:10px;}
+  .standings-stat .v{font-size:18px; font-weight:700; line-height:1.2;}
+  .standings-stat .l{font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px;}
+  .trend-wrap{margin-top:14px;}
+  .trend-label{font-size:11px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px;}
+  .trend-list{font-size:10.5px; color:var(--text-muted); margin-top:6px; line-height:1.6;}
+
+  .race-controls{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+  .race-btn{
+    background:var(--card2); border:1px solid var(--border); border-radius:8px;
+    color:var(--text); font-size:14px; padding:6px 12px; cursor:pointer;
+    -webkit-tap-highlight-color:transparent; font-family:inherit; line-height:1;
+  }
+  .race-btn:active{background:var(--accent-dark);}
+  .race-fecha{flex:1; text-align:center; font-size:12px; color:var(--text-muted); font-weight:600;}
+  .race-container{position:relative;}
+  .race-row{
+    position:absolute; left:0; right:0; top:0; height:26px;
+    display:flex; align-items:center; gap:6px;
+    transition:transform .6s ease;
+  }
+  .race-name{
+    flex:0 0 92px; width:92px; font-size:10.5px; color:var(--text-muted);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .race-row.us .race-name{color:var(--text); font-weight:700;}
+  .race-track{flex:1; background:var(--card2); border-radius:4px; height:14px; position:relative; overflow:hidden;}
+  .race-fill{
+    position:absolute; left:0; top:0; bottom:0; border-radius:4px;
+    background:var(--border); transition:width .6s ease;
+  }
+  .race-row.us .race-fill{background:var(--accent);}
+  .race-value{
+    flex:0 0 22px; width:22px; text-align:right; font-size:10.5px;
+    color:var(--text-muted); font-variant-numeric:tabular-nums;
+  }
+  .race-row.us .race-value{color:var(--text); font-weight:700;}
+
   /* Modal */
   .overlay{
     position:fixed; inset:0; background:rgba(0,0,0,.55); display:none;
@@ -363,6 +410,40 @@
     <p style="font-size:10.5px; color:var(--text-muted); margin-top:8px;">
       Esto es lo conversado, falta que el organizador lo confirme fecha por fecha.
     </p>
+  </section>
+
+  <section class="panel">
+    <button class="standings-toggle" id="standingsToggle" type="button" aria-expanded="false" aria-controls="standingsBody">
+      <h2>Tabla de posiciones</h2>
+      <span class="chev">▾</span>
+    </button>
+    <div id="standingsBody" hidden>
+      <div id="standingsSummary"></div>
+      <div class="trend-wrap">
+        <div class="trend-label">Puntos por fecha</div>
+        <svg id="trendChart" viewBox="0 0 300 110" role="img" aria-label="Evolución de puntos por fecha" style="width:100%; height:auto; display:block;"></svg>
+        <div id="trendList" class="trend-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <button class="standings-toggle" id="raceToggle" type="button" aria-expanded="false" aria-controls="raceBody">
+      <h2>Ranking del grupo</h2>
+      <span class="chev">▾</span>
+    </button>
+    <div id="raceBody" hidden>
+      <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">
+        Evolución de puntos de las 9 promociones del Grupo 02, fecha a fecha.
+      </p>
+      <div class="race-controls">
+        <button class="race-btn" id="racePrevBtn" type="button" aria-label="Fecha anterior">‹</button>
+        <button class="race-btn" id="racePlayBtn" type="button" aria-label="Reproducir">▶</button>
+        <div class="race-fecha" id="raceFechaLabel"></div>
+        <button class="race-btn" id="raceNextBtn" type="button" aria-label="Fecha siguiente">›</button>
+      </div>
+      <div class="race-container" id="raceContainer"></div>
+    </div>
   </section>
 
   <section class="panel">
@@ -597,6 +678,7 @@
       renderOfficialTable();
       renderOfficialProgression();
       renderSeasonStats();
+      renderPositionSummary();
     }
   }
 
@@ -1116,6 +1198,241 @@
       return `<div class="log-item">${m.label || id}: puesto ${fmt(o.pos)} · ${fmt(o.pts)} pts (PJ${fmt(o.pj)} PG${fmt(o.pg)} PE${fmt(o.pe)} PP${fmt(o.pp)}, GF${fmt(o.gf)} GC${fmt(o.gc)}, DG${dgLabel})</div>`;
     }).join("");
   }
+
+  // ============================================================
+  // Resumen visual + tendencia de puntos, mismo diseño que la página
+  // de anotación. Usa el mismo seasonStats que ya llena esta sección.
+  // ============================================================
+  function fechaShortLabel(label){
+    if(!label) return "?";
+    const m = label.match(/(\d+[a-záéíóú]*)\s*fecha/i);
+    return m ? m[1] : label.split(" ")[0];
+  }
+
+  function renderPositionSummary(){
+    const summaryEl = document.getElementById("standingsSummary");
+    const listEl = document.getElementById("trendList");
+    const svg = document.getElementById("trendChart");
+    if(!summaryEl || !svg) return;
+
+    const fechas = Object.keys(seasonStats)
+      .filter(id => seasonStats[id].officialTable)
+      .sort()
+      .map(id => ({ id, label: seasonStats[id].label || id, officialTable: seasonStats[id].officialTable }));
+
+    if(fechas.length === 0){
+      summaryEl.innerHTML = `<span class="log-empty">Todavía no hay tabla oficial cargada</span>`;
+      svg.innerHTML = "";
+      listEl.innerHTML = "";
+      return;
+    }
+
+    const last = fechas[fechas.length - 1];
+    const o = last.officialTable;
+    const dg = (typeof o.gf === "number" && typeof o.gc === "number") ? o.gf - o.gc : null;
+    summaryEl.innerHTML = `
+      <div class="standings-row">
+        <div class="standings-stat"><div class="v">${o.pos ?? "?"}°</div><div class="l">Posición</div></div>
+        <div class="standings-stat"><div class="v">${o.pts ?? "?"}</div><div class="l">Puntos</div></div>
+        <div class="standings-stat"><div class="v">${o.pj ?? "?"}</div><div class="l">PJ</div></div>
+        <div class="standings-stat"><div class="v">${dg === null ? "?" : (dg > 0 ? "+" + dg : dg)}</div><div class="l">DG</div></div>
+      </div>
+      <p style="font-size:10.5px; color:var(--text-muted); margin:0;">
+        ${last.label}: ${o.pg ?? "?"}G ${o.pe ?? "?"}E ${o.pp ?? "?"}P · ${o.gf ?? "?"}-${o.gc ?? "?"}
+      </p>
+    `;
+
+    const trend = fechas.filter(f => typeof f.officialTable.pts === "number");
+    if(trend.length === 0){
+      svg.innerHTML = "";
+      listEl.innerHTML = "";
+      return;
+    }
+
+    const W = 300, H = 110, padL = 16, padR = 16, padT = 22, padB = 20;
+    const maxPts = Math.max(...trend.map(f => f.officialTable.pts), 1);
+    const stepX = trend.length > 1 ? (W - padL - padR) / (trend.length - 1) : 0;
+    const scaleY = (v) => H - padB - (v / maxPts) * (H - padT - padB);
+    const coords = trend.map((f, i) => ({ x: padL + i * stepX, y: scaleY(f.officialTable.pts), f }));
+
+    const linePath = coords.map((c, i) => `${i === 0 ? "M" : "L"}${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(" ");
+    const baselineY = H - padB;
+
+    const dots = coords.map((c, i) => {
+      const isLast = i === coords.length - 1;
+      const title = `${c.f.label}: ${c.f.officialTable.pts} pts`;
+      const valueY = (c.y - (isLast ? 10 : 8)).toFixed(1);
+      return `
+        <circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${isLast ? 5 : 3.5}" fill="var(--accent)">
+          <title>${title}</title>
+        </circle>
+        <text x="${c.x.toFixed(1)}" y="${valueY}" font-size="${isLast ? 11 : 9.5}" font-weight="${isLast ? 700 : 600}" fill="${isLast ? "var(--text)" : "var(--text-muted)"}" text-anchor="middle">${c.f.officialTable.pts}</text>
+      `;
+    }).join("");
+
+    const labels = coords.map(c =>
+      `<text x="${c.x.toFixed(1)}" y="${H - 5}" font-size="9" fill="var(--text-muted)" text-anchor="middle">${fechaShortLabel(c.f.label)}</text>`
+    ).join("");
+
+    svg.innerHTML = `
+      <line x1="${padL}" y1="${baselineY}" x2="${W - padR}" y2="${baselineY}" stroke="var(--border)" stroke-width="1"/>
+      <path d="${linePath}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      ${dots}
+      ${labels}
+    `;
+
+    listEl.innerHTML = trend.map(f => `${fechaShortLabel(f.label)}: ${f.officialTable.pts} pts (pos ${f.officialTable.pos ?? "?"}°)`).join(" · ");
+  }
+
+  const standingsToggle = document.getElementById("standingsToggle");
+  const standingsBody = document.getElementById("standingsBody");
+  standingsToggle.addEventListener("click", () => {
+    const expanded = standingsToggle.getAttribute("aria-expanded") === "true";
+    standingsToggle.setAttribute("aria-expanded", String(!expanded));
+    standingsBody.hidden = expanded;
+  });
+
+  // ============================================================
+  // Ranking animado del grupo (bar chart race), Grupo 02 completo.
+  // Igual que en la página de anotación: data fija, transcrita de las
+  // tablas que publica el organizador. No vive en Firestore.
+  // ============================================================
+  const TEAM_NAMES = {
+    "2004":"2004", "2005":"2005", "2000":"2000", "2002":"2002", "2006":"2006",
+    "2003":"2003", "1998":"1998", "1999":"1999", "2001":"2001"
+  };
+  const OUR_TEAM = "2004";
+
+  const GROUP_TABLE_HISTORY = [
+    { id:"2026-08-15", label:"1ra fecha", teams:{
+      "2005":{pg:1,pe:0,pp:0,gf:3,gc:0}, "2004":{pg:1,pe:0,pp:0,gf:3,gc:1},
+      "2000":{pg:1,pe:0,pp:0,gf:2,gc:1}, "2002":{pg:0,pe:1,pp:0,gf:1,gc:1},
+      "2006":{pg:0,pe:1,pp:0,gf:1,gc:1}, "2003":{pg:0,pe:0,pp:0,gf:0,gc:0},
+      "1998":{pg:0,pe:0,pp:1,gf:1,gc:2}, "1999":{pg:0,pe:0,pp:1,gf:1,gc:3},
+      "2001":{pg:0,pe:0,pp:1,gf:0,gc:3}
+    }},
+    { id:"2026-08-22", label:"2da fecha", teams:{
+      "2005":{pg:2,pe:0,pp:0,gf:7,gc:1}, "2002":{pg:1,pe:1,pp:0,gf:5,gc:2},
+      "1998":{pg:1,pe:0,pp:1,gf:3,gc:2}, "2000":{pg:1,pe:0,pp:0,gf:2,gc:1},
+      "2004":{pg:1,pe:0,pp:1,gf:4,gc:5}, "2003":{pg:0,pe:1,pp:0,gf:0,gc:0},
+      "2006":{pg:0,pe:1,pp:1,gf:2,gc:5}, "1999":{pg:0,pe:0,pp:2,gf:1,gc:5},
+      "2001":{pg:0,pe:1,pp:1,gf:0,gc:3}
+    }},
+    { id:"2026-08-29", label:"3ra fecha", teams:{
+      "2002":{pg:2,pe:1,pp:0,gf:10,gc:2}, "2005":{pg:2,pe:1,pp:0,gf:7,gc:1},
+      "2004":{pg:1,pe:0,pp:2,gf:4,gc:7}, "1998":{pg:1,pe:0,pp:1,gf:3,gc:2},
+      "2000":{pg:1,pe:0,pp:1,gf:4,gc:4}, "2003":{pg:0,pe:2,pp:0,gf:1,gc:1},
+      "2006":{pg:0,pe:2,pp:1,gf:3,gc:6}, "2001":{pg:0,pe:1,pp:2,gf:3,gc:5},
+      "1999":{pg:0,pe:0,pp:3,gf:1,gc:10}
+    }},
+    { id:"2026-09-05", label:"4ta fecha", teams:{
+      "2005":{pg:4,pe:0,pp:0,gf:14,gc:3}, "2002":{pg:2,pe:1,pp:1,gf:12,gc:7},
+      "1998":{pg:2,pe:0,pp:1,gf:6,gc:2}, "2000":{pg:2,pe:0,pp:1,gf:7,gc:6},
+      "2004":{pg:2,pe:0,pp:2,gf:5,gc:7}, "2001":{pg:1,pe:1,pp:2,gf:3,gc:8},
+      "2003":{pg:0,pe:2,pp:1,gf:1,gc:2}, "2006":{pg:0,pe:2,pp:2,gf:5,gc:9},
+      "1999":{pg:0,pe:0,pp:3,gf:1,gc:10}
+    }},
+    { id:"2026-09-12", label:"5ta fecha", teams:{
+      "2005":{pg:5,pe:0,pp:0,gf:18,gc:3}, "2004":{pg:3,pe:0,pp:2,gf:7,gc:8},
+      "2002":{pg:2,pe:1,pp:2,gf:12,gc:8}, "1998":{pg:2,pe:0,pp:2,gf:7,gc:6},
+      "2000":{pg:2,pe:0,pp:2,gf:8,gc:8}, "2003":{pg:1,pe:2,pp:1,gf:2,gc:2},
+      "2006":{pg:1,pe:2,pp:2,gf:9,gc:10}, "2001":{pg:1,pe:1,pp:2,gf:3,gc:8},
+      "1999":{pg:0,pe:0,pp:4,gf:1,gc:14}
+    }}
+  ];
+
+  const RACE_ROW_H = 30;
+  let raceIndex = GROUP_TABLE_HISTORY.length - 1;
+  let racePlaying = false;
+  let raceTimer = null;
+
+  function computeStanding(teams){
+    return Object.keys(TEAM_NAMES).map(code => {
+      const t = teams[code] || { pg:0, pe:0, pp:0, gf:0, gc:0 };
+      const pts = t.pg * 3 + t.pe;
+      const dg = t.gf - t.gc;
+      return { code, pts, dg, gf: t.gf };
+    }).sort((a, b) => (b.pts - a.pts) || (b.dg - a.dg) || (b.gf - a.gf));
+  }
+
+  function renderRace(){
+    const container = document.getElementById("raceContainer");
+    const fechaLabel = document.getElementById("raceFechaLabel");
+    if(!container) return;
+    const fecha = GROUP_TABLE_HISTORY[raceIndex];
+    if(!fecha) return;
+
+    if(!container.dataset.built){
+      container.innerHTML = Object.keys(TEAM_NAMES).map(code => `
+        <div class="race-row" data-code="${code}">
+          <div class="race-name">${code}${code === OUR_TEAM ? " (nosotros)" : ""}</div>
+          <div class="race-track"><div class="race-fill" style="width:0%"></div></div>
+          <div class="race-value">0</div>
+        </div>
+      `).join("");
+      container.dataset.built = "1";
+      container.style.height = (Object.keys(TEAM_NAMES).length * RACE_ROW_H) + "px";
+    }
+
+    fechaLabel.textContent = fecha.label;
+    const standing = computeStanding(fecha.teams);
+    const maxPts = Math.max(...standing.map(s => s.pts), 1);
+
+    standing.forEach((s, rank) => {
+      const row = container.querySelector(`.race-row[data-code="${s.code}"]`);
+      if(!row) return;
+      row.classList.toggle("us", s.code === OUR_TEAM);
+      row.style.transform = `translateY(${rank * RACE_ROW_H}px)`;
+      row.querySelector(".race-fill").style.width = `${(s.pts / maxPts) * 100}%`;
+      row.querySelector(".race-value").textContent = s.pts;
+    });
+  }
+
+  function updateRacePlayBtn(){
+    const btn = document.getElementById("racePlayBtn");
+    if(btn) btn.textContent = racePlaying ? "⏸" : "▶";
+  }
+
+  function raceStop(){
+    clearInterval(raceTimer);
+    racePlaying = false;
+    updateRacePlayBtn();
+  }
+
+  function raceStep(dir){
+    raceStop();
+    raceIndex = Math.max(0, Math.min(GROUP_TABLE_HISTORY.length - 1, raceIndex + dir));
+    renderRace();
+  }
+
+  function raceTogglePlay(){
+    if(racePlaying){
+      raceStop();
+      return;
+    }
+    if(raceIndex >= GROUP_TABLE_HISTORY.length - 1) raceIndex = 0;
+    racePlaying = true;
+    updateRacePlayBtn();
+    renderRace();
+    raceTimer = setInterval(() => {
+      raceIndex++;
+      renderRace();
+      if(raceIndex >= GROUP_TABLE_HISTORY.length - 1) raceStop();
+    }, 1100);
+  }
+
+  document.getElementById("racePrevBtn").addEventListener("click", () => raceStep(-1));
+  document.getElementById("raceNextBtn").addEventListener("click", () => raceStep(1));
+  document.getElementById("racePlayBtn").addEventListener("click", raceTogglePlay);
+
+  const raceToggle = document.getElementById("raceToggle");
+  const raceBody = document.getElementById("raceBody");
+  raceToggle.addEventListener("click", () => {
+    const expanded = raceToggle.getAttribute("aria-expanded") === "true";
+    raceToggle.setAttribute("aria-expanded", String(!expanded));
+    raceBody.hidden = expanded;
+    if(!expanded) renderRace();
+  });
 
   ["offPos","offPts","offPj","offPg","offPe","offPp","offGf","offGc"].forEach(elId => {
     const field = elId.replace("off","").toLowerCase();
