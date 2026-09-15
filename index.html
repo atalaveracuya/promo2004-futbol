@@ -96,6 +96,37 @@
   .trend-label{font-size:11px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px;}
   .trend-list{font-size:10.5px; color:var(--text-muted); margin-top:6px; line-height:1.6;}
 
+  .race-controls{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+  .race-btn{
+    background:var(--card2); border:1px solid var(--border); border-radius:8px;
+    color:var(--text); font-size:14px; padding:6px 12px; cursor:pointer;
+    -webkit-tap-highlight-color:transparent; font-family:inherit; line-height:1;
+  }
+  .race-btn:active{background:var(--accent-dark);}
+  .race-fecha{flex:1; text-align:center; font-size:12px; color:var(--text-muted); font-weight:600;}
+  .race-container{position:relative;}
+  .race-row{
+    position:absolute; left:0; right:0; top:0; height:26px;
+    display:flex; align-items:center; gap:6px;
+    transition:transform .6s ease;
+  }
+  .race-name{
+    flex:0 0 92px; width:92px; font-size:10.5px; color:var(--text-muted);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .race-row.us .race-name{color:var(--text); font-weight:700;}
+  .race-track{flex:1; background:var(--card2); border-radius:4px; height:14px; position:relative; overflow:hidden;}
+  .race-fill{
+    position:absolute; left:0; top:0; bottom:0; border-radius:4px;
+    background:var(--border); transition:width .6s ease;
+  }
+  .race-row.us .race-fill{background:var(--accent);}
+  .race-value{
+    flex:0 0 22px; width:22px; text-align:right; font-size:10.5px;
+    color:var(--text-muted); font-variant-numeric:tabular-nums;
+  }
+  .race-row.us .race-value{color:var(--text); font-weight:700;}
+
   /* Modal */
   .overlay{
     position:fixed; inset:0; background:rgba(0,0,0,.55); display:none;
@@ -157,6 +188,25 @@
         <svg id="trendChart" viewBox="0 0 300 110" role="img" aria-label="Evolución de puntos por fecha" style="width:100%; height:auto; display:block;"></svg>
         <div id="trendList" class="trend-list"></div>
       </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <button class="standings-toggle" id="raceToggle" type="button" aria-expanded="false" aria-controls="raceBody">
+      <h2>Ranking del grupo</h2>
+      <span class="chev">▾</span>
+    </button>
+    <div id="raceBody" hidden>
+      <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">
+        Evolución de puntos de las 9 promociones del Grupo 02, fecha a fecha.
+      </p>
+      <div class="race-controls">
+        <button class="race-btn" id="racePrevBtn" type="button" aria-label="Fecha anterior">‹</button>
+        <button class="race-btn" id="racePlayBtn" type="button" aria-label="Reproducir">▶</button>
+        <div class="race-fecha" id="raceFechaLabel"></div>
+        <button class="race-btn" id="raceNextBtn" type="button" aria-label="Fecha siguiente">›</button>
+      </div>
+      <div class="race-container" id="raceContainer"></div>
     </div>
   </section>
 
@@ -318,6 +368,153 @@
   }
 
   initStandings();
+
+  // ============================================================
+  // Ranking animado del grupo (bar chart race), Grupo 02 completo.
+  // A diferencia de "Tabla de posiciones" (que lee de Firestore la
+  // fila de Promoción 2004), esto es data fija de las 9 promociones,
+  // transcrita de las tablas que publica el organizador cada fecha.
+  // No se guarda en Firestore: para sumar una fecha nueva hay que
+  // agregar una entrada más acá.
+  // ============================================================
+  const TEAM_NAMES = {
+    "2004":"2004", "2005":"2005", "2000":"2000", "2002":"2002", "2006":"2006",
+    "2003":"2003", "1998":"1998", "1999":"1999", "2001":"2001"
+  };
+  const OUR_TEAM = "2004";
+
+  const GROUP_TABLE_HISTORY = [
+    { id:"2026-08-15", label:"1ra fecha", teams:{
+      "2005":{pg:1,pe:0,pp:0,gf:3,gc:0}, "2004":{pg:1,pe:0,pp:0,gf:3,gc:1},
+      "2000":{pg:1,pe:0,pp:0,gf:2,gc:1}, "2002":{pg:0,pe:1,pp:0,gf:1,gc:1},
+      "2006":{pg:0,pe:1,pp:0,gf:1,gc:1}, "2003":{pg:0,pe:0,pp:0,gf:0,gc:0},
+      "1998":{pg:0,pe:0,pp:1,gf:1,gc:2}, "1999":{pg:0,pe:0,pp:1,gf:1,gc:3},
+      "2001":{pg:0,pe:0,pp:1,gf:0,gc:3}
+    }},
+    { id:"2026-08-22", label:"2da fecha", teams:{
+      "2005":{pg:2,pe:0,pp:0,gf:7,gc:1}, "2002":{pg:1,pe:1,pp:0,gf:5,gc:2},
+      "1998":{pg:1,pe:0,pp:1,gf:3,gc:2}, "2000":{pg:1,pe:0,pp:0,gf:2,gc:1},
+      "2004":{pg:1,pe:0,pp:1,gf:4,gc:5}, "2003":{pg:0,pe:1,pp:0,gf:0,gc:0},
+      "2006":{pg:0,pe:1,pp:1,gf:2,gc:5}, "1999":{pg:0,pe:0,pp:2,gf:1,gc:5},
+      "2001":{pg:0,pe:1,pp:1,gf:0,gc:3}
+    }},
+    { id:"2026-08-29", label:"3ra fecha", teams:{
+      "2002":{pg:2,pe:1,pp:0,gf:10,gc:2}, "2005":{pg:2,pe:1,pp:0,gf:7,gc:1},
+      "2004":{pg:1,pe:0,pp:2,gf:4,gc:7}, "1998":{pg:1,pe:0,pp:1,gf:3,gc:2},
+      "2000":{pg:1,pe:0,pp:1,gf:4,gc:4}, "2003":{pg:0,pe:2,pp:0,gf:1,gc:1},
+      "2006":{pg:0,pe:2,pp:1,gf:3,gc:6}, "2001":{pg:0,pe:1,pp:2,gf:3,gc:5},
+      "1999":{pg:0,pe:0,pp:3,gf:1,gc:10}
+    }},
+    { id:"2026-09-05", label:"4ta fecha", teams:{
+      "2005":{pg:4,pe:0,pp:0,gf:14,gc:3}, "2002":{pg:2,pe:1,pp:1,gf:12,gc:7},
+      "1998":{pg:2,pe:0,pp:1,gf:6,gc:2}, "2000":{pg:2,pe:0,pp:1,gf:7,gc:6},
+      "2004":{pg:2,pe:0,pp:2,gf:5,gc:7}, "2001":{pg:1,pe:1,pp:2,gf:3,gc:8},
+      "2003":{pg:0,pe:2,pp:1,gf:1,gc:2}, "2006":{pg:0,pe:2,pp:2,gf:5,gc:9},
+      "1999":{pg:0,pe:0,pp:3,gf:1,gc:10}
+    }},
+    { id:"2026-09-12", label:"5ta fecha", teams:{
+      "2005":{pg:5,pe:0,pp:0,gf:18,gc:3}, "2004":{pg:3,pe:0,pp:2,gf:7,gc:8},
+      "2002":{pg:2,pe:1,pp:2,gf:12,gc:8}, "1998":{pg:2,pe:0,pp:2,gf:7,gc:6},
+      "2000":{pg:2,pe:0,pp:2,gf:8,gc:8}, "2003":{pg:1,pe:2,pp:1,gf:2,gc:2},
+      "2006":{pg:1,pe:2,pp:2,gf:9,gc:10}, "2001":{pg:1,pe:1,pp:2,gf:3,gc:8},
+      "1999":{pg:0,pe:0,pp:4,gf:1,gc:14}
+    }}
+  ];
+
+  const RACE_ROW_H = 30;
+  let raceIndex = GROUP_TABLE_HISTORY.length - 1;
+  let racePlaying = false;
+  let raceTimer = null;
+
+  // Puntos y PJ se calculan siempre de PG/PE/PP (nunca se guardan sueltos),
+  // así el ranking nunca puede quedar inconsistente con los partidos cargados.
+  function computeStanding(teams){
+    return Object.keys(TEAM_NAMES).map(code => {
+      const t = teams[code] || { pg:0, pe:0, pp:0, gf:0, gc:0 };
+      const pts = t.pg * 3 + t.pe;
+      const dg = t.gf - t.gc;
+      return { code, pts, dg, gf: t.gf };
+    }).sort((a, b) => (b.pts - a.pts) || (b.dg - a.dg) || (b.gf - a.gf));
+  }
+
+  function renderRace(){
+    const container = document.getElementById("raceContainer");
+    const fechaLabel = document.getElementById("raceFechaLabel");
+    if(!container) return;
+    const fecha = GROUP_TABLE_HISTORY[raceIndex];
+    if(!fecha) return;
+
+    if(!container.dataset.built){
+      container.innerHTML = Object.keys(TEAM_NAMES).map(code => `
+        <div class="race-row" data-code="${code}">
+          <div class="race-name">${code}${code === OUR_TEAM ? " (nosotros)" : ""}</div>
+          <div class="race-track"><div class="race-fill" style="width:0%"></div></div>
+          <div class="race-value">0</div>
+        </div>
+      `).join("");
+      container.dataset.built = "1";
+      container.style.height = (Object.keys(TEAM_NAMES).length * RACE_ROW_H) + "px";
+    }
+
+    fechaLabel.textContent = fecha.label;
+    const standing = computeStanding(fecha.teams);
+    const maxPts = Math.max(...standing.map(s => s.pts), 1);
+
+    standing.forEach((s, rank) => {
+      const row = container.querySelector(`.race-row[data-code="${s.code}"]`);
+      if(!row) return;
+      row.classList.toggle("us", s.code === OUR_TEAM);
+      row.style.transform = `translateY(${rank * RACE_ROW_H}px)`;
+      row.querySelector(".race-fill").style.width = `${(s.pts / maxPts) * 100}%`;
+      row.querySelector(".race-value").textContent = s.pts;
+    });
+  }
+
+  function updateRacePlayBtn(){
+    const btn = document.getElementById("racePlayBtn");
+    if(btn) btn.textContent = racePlaying ? "⏸" : "▶";
+  }
+
+  function raceStop(){
+    clearInterval(raceTimer);
+    racePlaying = false;
+    updateRacePlayBtn();
+  }
+
+  function raceStep(dir){
+    raceStop();
+    raceIndex = Math.max(0, Math.min(GROUP_TABLE_HISTORY.length - 1, raceIndex + dir));
+    renderRace();
+  }
+
+  function raceTogglePlay(){
+    if(racePlaying){
+      raceStop();
+      return;
+    }
+    if(raceIndex >= GROUP_TABLE_HISTORY.length - 1) raceIndex = 0;
+    racePlaying = true;
+    updateRacePlayBtn();
+    renderRace();
+    raceTimer = setInterval(() => {
+      raceIndex++;
+      renderRace();
+      if(raceIndex >= GROUP_TABLE_HISTORY.length - 1) raceStop();
+    }, 1100);
+  }
+
+  document.getElementById("racePrevBtn").addEventListener("click", () => raceStep(-1));
+  document.getElementById("raceNextBtn").addEventListener("click", () => raceStep(1));
+  document.getElementById("racePlayBtn").addEventListener("click", raceTogglePlay);
+
+  const raceToggle = document.getElementById("raceToggle");
+  const raceBody = document.getElementById("raceBody");
+  raceToggle.addEventListener("click", () => {
+    const expanded = raceToggle.getAttribute("aria-expanded") === "true";
+    raceToggle.setAttribute("aria-expanded", String(!expanded));
+    raceBody.hidden = expanded;
+    if(!expanded) renderRace();
+  });
 </script>
 </body>
 </html>
