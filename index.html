@@ -160,6 +160,8 @@
     </div>
   </section>
 
+  <p style="text-align:center; font-size:10px; color:var(--text-muted); margin:20px 0 0;">v2.0</p>
+
 </div>
 
 <div class="overlay" id="whoOverlay">
@@ -215,7 +217,12 @@
   });
 
   function fechaShortLabel(label){
-    return (label || "").split(" ")[0];
+    if(!label) return "?";
+    // Busca el patrón "Nra/da/ta/va fecha" dentro de la etiqueta, para que
+    // funcione igual con "5ta fecha" o con una etiqueta larga tipo
+    // "Sáb 12/09 · 7:40 pm · 5ta fecha".
+    const m = label.match(/(\d+[a-záéíóú]*)\s*fecha/i);
+    return m ? m[1] : label.split(" ")[0];
   }
 
   function renderStandings(fechas){
@@ -252,7 +259,7 @@
       return;
     }
 
-    const W = 300, H = 110, padL = 16, padR = 16, padT = 18, padB = 20;
+    const W = 300, H = 110, padL = 16, padR = 16, padT = 22, padB = 20;
     const maxPts = Math.max(...trend.map(f => f.officialTable.pts), 1);
     const stepX = trend.length > 1 ? (W - padL - padR) / (trend.length - 1) : 0;
     const scaleY = (v) => H - padB - (v / maxPts) * (H - padT - padB);
@@ -261,14 +268,17 @@
     const linePath = coords.map((c, i) => `${i === 0 ? "M" : "L"}${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(" ");
     const baselineY = H - padB;
 
+    // Con pocos puntos (una temporada corta) etiquetar cada uno ayuda más de
+    // lo que estorba; el último queda resaltado porque es el dato vigente.
     const dots = coords.map((c, i) => {
       const isLast = i === coords.length - 1;
-      const label = `${c.f.label}: ${c.f.officialTable.pts} pts`;
+      const title = `${c.f.label}: ${c.f.officialTable.pts} pts`;
+      const valueY = (c.y - (isLast ? 10 : 8)).toFixed(1);
       return `
         <circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${isLast ? 5 : 3.5}" fill="var(--accent)">
-          <title>${label}</title>
+          <title>${title}</title>
         </circle>
-        ${isLast ? `<text x="${c.x.toFixed(1)}" y="${(c.y - 10).toFixed(1)}" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">${c.f.officialTable.pts}</text>` : ""}
+        <text x="${c.x.toFixed(1)}" y="${valueY}" font-size="${isLast ? 11 : 9.5}" font-weight="${isLast ? 700 : 600}" fill="${isLast ? "var(--text)" : "var(--text-muted)"}" text-anchor="middle">${c.f.officialTable.pts}</text>
       `;
     }).join("");
 
