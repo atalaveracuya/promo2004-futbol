@@ -147,6 +147,53 @@
   .btn.primary{background:var(--accent); border-color:var(--accent-dark); color:#17110a;}
   .btn:active{opacity:.8;}
   .log{max-height:160px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;}
+
+  .result-row{display:flex; gap:12px; margin-bottom:14px;}
+  .result-row label{
+    flex:1; font-size:11px; color:var(--text-muted); display:flex; flex-direction:column; gap:4px;
+  }
+  .result-row input{
+    background:var(--card2); border:1px solid var(--border); border-radius:8px;
+    color:var(--text); font-size:16px; padding:8px; width:100%;
+  }
+  .official-grid{
+    display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;
+  }
+  .official-grid label{
+    font-size:10.5px; color:var(--text-muted); display:flex; flex-direction:column; gap:3px;
+  }
+  .official-grid input{
+    background:var(--card2); border:1px solid var(--border); border-radius:8px;
+    color:var(--text); font-size:14px; padding:6px; width:100%;
+  }
+
+  .stat-row{
+    display:flex; align-items:center; gap:8px; padding:8px 0;
+    border-bottom:1px solid var(--border);
+  }
+  .stat-row:last-child{border-bottom:none;}
+  .stat-name{flex:1; font-size:13px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .vino-btn{
+    background:var(--card2); border:1px solid var(--border); border-radius:16px;
+    color:var(--text-muted); font-size:11px; font-weight:600; padding:6px 10px;
+    cursor:pointer; -webkit-tap-highlight-color:transparent; white-space:nowrap;
+  }
+  .vino-btn.active{background:rgba(226,167,48,.2); border-color:var(--accent); color:var(--accent);}
+  .goal-stepper{display:flex; align-items:center; gap:6px;}
+  .goal-btn{
+    width:28px; height:28px; border-radius:8px; border:1px solid var(--border);
+    background:var(--card2); color:var(--text); font-size:16px; line-height:1;
+    cursor:pointer; -webkit-tap-highlight-color:transparent;
+  }
+  .goal-count{min-width:16px; text-align:center; font-size:13px; font-weight:700;}
+
+  .stats-table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  .stats-table th{
+    text-align:left; font-size:10.5px; color:var(--text-muted); font-weight:600;
+    text-transform:uppercase; letter-spacing:.3px; padding:4px 6px; border-bottom:1px solid var(--border);
+  }
+  .stats-table td{padding:6px; border-bottom:1px solid var(--border);}
+  .stats-table td.num{text-align:center;}
   .log-item{font-size:12px; color:var(--text-muted); border-left:2px solid var(--accent); padding-left:8px;}
   .log-empty{font-size:12px; color:var(--text-muted); font-style:italic;}
 
@@ -216,11 +263,7 @@
   </section>
 
   <section class="panel">
-    <div class="panel-head">
-      <h2>Cambios del partido</h2>
-      <button class="add-btn" id="clearLogBtn" type="button">Vaciar</button>
-    </div>
-    <p id="logHint" style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;"></p>
+    <h2>Cambios del partido</h2>
     <div class="log" id="log"></div>
   </section>
 
@@ -231,6 +274,108 @@
     <button class="btn" id="undoBtn">Deshacer último cambio</button>
     <button class="btn" id="resetBtn">Reiniciar alineación</button>
   </div>
+
+  <section class="panel">
+    <h2>Registrar este partido</h2>
+    <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">
+      Esto es lo real (quién vino, quién metió gol) — distinto de quién se había anotado antes del partido.
+    </p>
+
+    <div class="result-row">
+      <label>Goles a favor
+        <input type="number" inputmode="numeric" min="0" id="golesFavorInput">
+      </label>
+      <label>Goles en contra
+        <input type="number" inputmode="numeric" min="0" id="golesContraInput">
+      </label>
+    </div>
+
+    <div id="matchRecordList"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Tabla oficial del campeonato (Grupo 02)</h2>
+    <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 6px;">
+      Esto lo publica el organizador cada fecha. Escribe la fila de Promoción 2004 tal cual sale en su tabla.
+    </p>
+    <p style="font-size:10.5px; color:var(--text-muted); margin:0 0 10px; line-height:1.5;">
+      <strong>Pos</strong>=Posición en la tabla · <strong>PJ</strong>=Partidos Jugados · <strong>PG</strong>=Partidos Ganados ·
+      <strong>PE</strong>=Partidos Empatados · <strong>PP</strong>=Partidos Perdidos · <strong>GF</strong>=Goles a Favor ·
+      <strong>GC</strong>=Goles en Contra · <strong>DG</strong>=Diferencia de Gol (GF−GC) · <strong>Pts</strong>=Puntos
+      (gana=3, empata=1, pierde=0)
+    </p>
+    <div class="official-grid">
+      <label>Posición <input type="number" inputmode="numeric" min="1" id="offPos"></label>
+      <label>Puntos <input type="number" inputmode="numeric" min="0" id="offPts"></label>
+      <label>PJ <input type="number" inputmode="numeric" min="0" id="offPj"></label>
+      <label>PG <input type="number" inputmode="numeric" min="0" id="offPg"></label>
+      <label>PE <input type="number" inputmode="numeric" min="0" id="offPe"></label>
+      <label>PP <input type="number" inputmode="numeric" min="0" id="offPp"></label>
+      <label>GF <input type="number" inputmode="numeric" min="0" id="offGf"></label>
+      <label>GC <input type="number" inputmode="numeric" min="0" id="offGc"></label>
+    </div>
+    <p style="font-size:11px; color:var(--text-muted); margin-top:8px;">DG (calculado): <strong id="offDgDisplay">0</strong></p>
+
+    <details style="margin-top:14px;">
+      <summary style="font-size:12px; color:var(--accent); cursor:pointer;">Cargar una fecha anterior</summary>
+      <div style="margin-top:10px;">
+        <div class="official-grid">
+          <label>ID fecha (AAAA-MM-DD) <input type="text" id="backfillId" placeholder="2026-08-15"></label>
+          <label>Etiqueta <input type="text" id="backfillLabel" placeholder="1ra fecha"></label>
+        </div>
+        <div class="official-grid" style="margin-top:8px;">
+          <label>Posición <input type="number" id="bfPos"></label>
+          <label>Puntos <input type="number" id="bfPts"></label>
+          <label>PJ <input type="number" id="bfPj"></label>
+          <label>PG <input type="number" id="bfPg"></label>
+          <label>PE <input type="number" id="bfPe"></label>
+          <label>PP <input type="number" id="bfPp"></label>
+          <label>GF <input type="number" id="bfGf"></label>
+          <label>GC <input type="number" id="bfGc"></label>
+        </div>
+        <button class="btn primary" id="saveBackfillBtn" style="margin-top:10px; width:100%;">Guardar esta fecha pasada</button>
+      </div>
+    </details>
+
+    <div style="margin-top:14px;">
+      <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px;">Evolución en la tabla</div>
+      <div class="log" id="officialProgression"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Calendario restante</h2>
+    <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">
+      Lo que queda de la fase regular, más la fecha final.
+    </p>
+    <div class="log">
+      <div class="log-item">1️⃣ vs Promoción 1998</div>
+      <div class="log-item">2️⃣ Descanso</div>
+      <div class="log-item">3️⃣ Descanso</div>
+      <div class="log-item">4️⃣ vs Promoción 2006</div>
+      <div class="log-item">5️⃣ vs Promoción 2001</div>
+      <div class="log-item">6️⃣ Fecha final (adicional)</div>
+    </div>
+    <p style="font-size:10.5px; color:var(--text-muted); margin-top:8px;">
+      5 sábados de fase regular + 1 sábado adicional de fecha final = 6 sábados en total.
+    </p>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Estadísticas de la temporada</h2>
+      <div style="display:flex; gap:6px;">
+        <button class="add-btn" id="sortByGoalsBtn" type="button" style="background:var(--card2); color:var(--text);">⚽ Goles</button>
+        <button class="add-btn" id="sortByAttendanceBtn" type="button" style="background:var(--card2); color:var(--text);">🔥 Asistencia</button>
+      </div>
+    </div>
+    <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;" id="seasonSummary"></p>
+    <div id="statsTable"></div>
+    <div style="margin-top:14px;">
+      <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px;">Historial de resultados</div>
+      <div class="log" id="resultHistory"></div>
+    </div>
+  </section>
 
 </div>
 
@@ -283,6 +428,10 @@
     window.structuredClone = (obj) => JSON.parse(JSON.stringify(obj));
   }
 
+  // Identifica la temporada para la colección de estadísticas/tabla oficial.
+  // Cambia esto solo cuando arranque una temporada nueva.
+  const SEASON_ID = "2026";
+
   const FORMATIONS = {
     "1-2-2": { DEL:1, VOL:2, DEF:2, note:"Equilibrada" },
     "2-1-2": { DEL:2, VOL:1, DEF:2, note:"Doble punta" },
@@ -313,8 +462,7 @@
     formation:"1-2-2",
     slots:{ ARQ:"p14", DEF1:"p10", DEF2:"p16", VOL1:"p7", VOL2:"p15", DEL1:"p11" },
     log:[],
-    history:[],
-    logFrozen:false
+    history:[]
   };
 
   const STORAGE_KEY = `promo2004_lineup_${MATCH_ID}`;
@@ -327,7 +475,6 @@
       if(!parsed.slots) return structuredClone(DEFAULT_STATE);
       if(!parsed.history) parsed.history = [];
       if(!parsed.log) parsed.log = [];
-      if(typeof parsed.logFrozen !== "boolean") parsed.logFrozen = false;
       if(!parsed.formation || !FORMATIONS[parsed.formation]) parsed.formation = "1-2-2";
       const expected = buildSlotDefs(parsed.formation).map(d => d.id);
       const valid = expected.every(id => parsed.slots[id]);
@@ -390,12 +537,6 @@
   }
 
   function renderLog(){
-    const hint = document.getElementById("logHint");
-    if(hint){
-      hint.textContent = state.logFrozen
-        ? "Registro vaciado: acomodar posiciones o formación ya no anota nada; \"Cambiar\" jugador sí sigue anotando."
-        : "Se anota cada cambio que hagas arriba.";
-    }
     const log = document.getElementById("log");
     if(state.log.length === 0){
       log.innerHTML = `<span class="log-empty">Todavía no hay cambios registrados</span>`;
@@ -425,8 +566,7 @@
     if(newKey === state.formation) return;
     const oldOutfieldIds = SLOT_DEFS.filter(d => d.type !== "ARQ").map(d => state.slots[d.id]);
 
-    const willLog = !state.logFrozen;
-    state.history.push({ slots: structuredClone(state.slots), formation: state.formation, logged: willLog });
+    state.history.push({ slots: structuredClone(state.slots), formation: state.formation });
 
     const oldKey = state.formation;
     state.formation = newKey;
@@ -437,9 +577,7 @@
     newOutfieldDefs.forEach((d, i) => { newSlots[d.id] = oldOutfieldIds[i]; });
     state.slots = newSlots;
 
-    if(willLog){
-      state.log.push({ time: timeNow(), text: `Cambio de formación: ${oldKey} → ${newKey}` });
-    }
+    state.log.push({ time: timeNow(), text: `Cambio de formación: ${oldKey} → ${newKey}` });
 
     saveState();
     renderAll();
@@ -451,6 +589,12 @@
     renderPitch();
     renderBench();
     renderLog();
+    if(statsMatchRef){
+      renderMatchRecord();
+      renderOfficialTable();
+      renderOfficialProgression();
+      renderSeasonStats();
+    }
   }
 
   function attachSlotEvents(el, slotId){
@@ -514,16 +658,13 @@
     const playerA = getPlayer(playerAId);
     const playerB = getPlayer(playerBId);
 
-    const willLog = !state.logFrozen;
-    state.history.push({ slots: structuredClone(state.slots), formation: state.formation, logged: willLog });
+    state.history.push({ slots: structuredClone(state.slots), formation: state.formation });
     state.slots[slotA] = playerBId;
     state.slots[slotB] = playerAId;
-    if(willLog){
-      state.log.push({
-        time: timeNow(),
-        text: `${playerA.name} y ${playerB.name} intercambian posición (${defA.label} ↔ ${defB.label})`
-      });
-    }
+    state.log.push({
+      time: timeNow(),
+      text: `${playerA.name} y ${playerB.name} intercambian posición (${defA.label} ↔ ${defB.label})`
+    });
 
     saveState();
     renderAll();
@@ -576,30 +717,26 @@
     const outgoing = getPlayer(outgoingId);
     const incoming = getPlayer(incomingId);
 
-    if(!incoming.confirmed && !confirm(`${incoming.name} no está marcado como confirmado que viene. ¿Igual lo pones?`)){
-      return;
-    }
-
-    // Un cambio de jugador siempre se anota (aunque el registro esté "vaciado"):
-    // acomodar posiciones/formación es ajuste, pero esto es un cambio real.
-    state.history.push({ slots: structuredClone(state.slots), formation: state.formation, logged: true });
+    state.history.push({ slots: structuredClone(state.slots), formation: state.formation });
 
     const incomingSlotId = Object.keys(state.slots)
       .find(sId => state.slots[sId] === incomingId);
 
-    let entryText;
     if(incomingSlotId){
       const incomingDef = SLOT_DEFS.find(s => s.id === incomingSlotId);
       state.slots[incomingSlotId] = outgoingId;
       state.slots[activeSlot] = incomingId;
-      entryText = `${incoming.name} y ${outgoing.name} intercambian posición (${incomingDef.label} ↔ ${def.label})`;
+      state.log.push({
+        time: timeNow(),
+        text: `${incoming.name} y ${outgoing.name} intercambian posición (${incomingDef.label} ↔ ${def.label})`
+      });
     } else {
       state.slots[activeSlot] = incomingId;
-      entryText = `Entra ${incoming.name} por ${outgoing.name} (${def.label})`;
+      state.log.push({
+        time: timeNow(),
+        text: `Entra ${incoming.name} por ${outgoing.name} (${def.label})`
+      });
     }
-
-    if(!incoming.confirmed) entryText = `⚠️ ${entryText} — sin confirmar`;
-    state.log.push({ time: timeNow(), text: entryText });
 
     saveState();
     renderAll();
@@ -616,15 +753,7 @@
     state.slots = last.slots;
     state.formation = last.formation;
     SLOT_DEFS = buildSlotDefs(state.formation);
-    if(last.logged) state.log.pop();
-    saveState();
-    renderAll();
-  }
-
-  function clearChangeLog(){
-    if(!confirm("¿Vaciar el registro de \"Cambios del partido\"? La alineación de arriba no se toca. Desde ahora, acomodar posiciones o formación no anota nada; usar \"Cambiar\" para meter a alguien sí sigue anotando.")) return;
-    state.log = [];
-    state.logFrozen = true;
+    state.log.pop();
     saveState();
     renderAll();
   }
@@ -710,12 +839,250 @@
       renderAll();
     }
   });
+  // ============================================================
+  // Registro real del partido + estadísticas de temporada
+  // Vive en una colección aparte (seasons/{SEASON_ID}/matches/{MATCH_ID}),
+  // independiente de la de inscripción semanal, para que nunca se borre.
+  // ============================================================
+  let statsMatchRef = null;
+  let statsCollectionRef = null;
+  let seasonStats = {}; // { matchId: { label, result:{golesFavor,golesContra}, players:{id:{attended,goals}} } }
+  let statsSortMode = "goals"; // "goals" | "attendance"
+
+  function initStatsFirestore(){
+    const db = firebase.firestore();
+    statsCollectionRef = db.collection("seasons").doc(SEASON_ID).collection("matches");
+    statsMatchRef = statsCollectionRef.doc(MATCH_ID);
+
+    statsMatchRef.get().then(snap => {
+      if(!snap.exists){
+        statsMatchRef.set({
+          label: MATCH_LABEL,
+          result: { golesFavor: 0, golesContra: 0 },
+          players: {}
+        });
+      }
+    });
+
+    statsCollectionRef.onSnapshot(querySnap => {
+      seasonStats = {};
+      querySnap.forEach(doc => { seasonStats[doc.id] = doc.data(); });
+      renderMatchRecord();
+      renderOfficialTable();
+      renderOfficialProgression();
+      renderSeasonStats();
+    }, err => {
+      console.error(err);
+    });
+  }
+
+  function getMatchPlayerStat(id){
+    const m = seasonStats[MATCH_ID];
+    const p = m && m.players && m.players[id];
+    return { attended: !!(p && p.attended), goals: (p && p.goals) || 0 };
+  }
+
+  function toggleAttended(id){
+    if(!statsMatchRef) return;
+    const current = getMatchPlayerStat(id).attended;
+    statsMatchRef.update({ [`players.${id}.attended`]: !current }).catch(err => {
+      alert("No se pudo guardar: " + err.message);
+    });
+  }
+
+  function addGoal(id, delta){
+    if(!statsMatchRef) return;
+    const newGoals = Math.max(0, getMatchPlayerStat(id).goals + delta);
+    statsMatchRef.update({ [`players.${id}.goals`]: newGoals }).catch(err => {
+      alert("No se pudo guardar: " + err.message);
+    });
+  }
+
+  function updateResult(field, value){
+    if(!statsMatchRef) return;
+    const n = Math.max(0, parseInt(value, 10) || 0);
+    statsMatchRef.update({ [`result.${field}`]: n }).catch(err => {
+      alert("No se pudo guardar: " + err.message);
+    });
+  }
+
+  function renderMatchRecord(){
+    const container = document.getElementById("matchRecordList");
+    if(!container) return;
+    const ids = sortRoster(allRosterIds());
+    container.innerHTML = ids.map(id => {
+      const p = getPlayer(id);
+      const stat = getMatchPlayerStat(id);
+      return `<div class="stat-row">
+        <span class="stat-name">${p.name}</span>
+        <button class="vino-btn ${stat.attended ? 'active' : ''}" data-id="${id}" type="button">
+          ${stat.attended ? '🔥 Vino' : 'Vino'}
+        </button>
+        <div class="goal-stepper">
+          <button class="goal-btn" data-id="${id}" data-delta="-1" type="button">−</button>
+          <span class="goal-count">${stat.goals}</span>
+          <button class="goal-btn" data-id="${id}" data-delta="1" type="button">+</button>
+        </div>
+      </div>`;
+    }).join("");
+    container.querySelectorAll(".vino-btn").forEach(btn => {
+      btn.addEventListener("click", () => toggleAttended(btn.dataset.id));
+    });
+    container.querySelectorAll(".goal-btn").forEach(btn => {
+      btn.addEventListener("click", () => addGoal(btn.dataset.id, parseInt(btn.dataset.delta, 10)));
+    });
+
+    const result = (seasonStats[MATCH_ID] && seasonStats[MATCH_ID].result) || { golesFavor:0, golesContra:0 };
+    const gf = document.getElementById("golesFavorInput");
+    const gc = document.getElementById("golesContraInput");
+    if(gf && document.activeElement !== gf) gf.value = result.golesFavor;
+    if(gc && document.activeElement !== gc) gc.value = result.golesContra;
+  }
+
+  function computeSeasonTotals(){
+    const totals = {};
+    allRosterIds().forEach(id => { totals[id] = { attended:0, goals:0 }; });
+    const matchIds = Object.keys(seasonStats);
+    matchIds.forEach(mid => {
+      const m = seasonStats[mid];
+      Object.entries(m.players || {}).forEach(([id, p]) => {
+        if(!totals[id]) totals[id] = { attended:0, goals:0 };
+        if(p.attended) totals[id].attended += 1;
+        totals[id].goals += (p.goals || 0);
+      });
+    });
+    return { totals, totalMatches: matchIds.length };
+  }
+
+  function renderSeasonStats(){
+    const table = document.getElementById("statsTable");
+    const summary = document.getElementById("seasonSummary");
+    const history = document.getElementById("resultHistory");
+    if(!table) return;
+
+    const { totals, totalMatches } = computeSeasonTotals();
+    summary.textContent = `${totalMatches} fecha${totalMatches === 1 ? "" : "s"} registrada${totalMatches === 1 ? "" : "s"} esta temporada`;
+
+    let rows = allRosterIds().map(id => {
+      const p = getPlayer(id);
+      const t = totals[id] || { attended:0, goals:0 };
+      const pct = totalMatches > 0 ? Math.round((t.attended / totalMatches) * 100) : 0;
+      return { name: p.name, attended: t.attended, goals: t.goals, pct };
+    });
+
+    rows.sort((a, b) => statsSortMode === "goals"
+      ? (b.goals - a.goals) || (b.attended - a.attended)
+      : (b.pct - a.pct) || (b.goals - a.goals)
+    );
+
+    table.innerHTML = `
+      <table class="stats-table">
+        <thead><tr><th>Jugador</th><th class="num">PJ</th><th class="num">Goles</th><th class="num">%Asist.</th></tr></thead>
+        <tbody>
+          ${rows.map(r => `<tr>
+            <td>${r.name}</td>
+            <td class="num">${r.attended}</td>
+            <td class="num">${r.goals}</td>
+            <td class="num">${r.pct}%</td>
+          </tr>`).join("")}
+        </tbody>
+      </table>
+    `;
+
+    const matchIds = Object.keys(seasonStats).sort();
+    history.innerHTML = matchIds.length === 0
+      ? `<span class="log-empty">Sin resultados registrados todavía</span>`
+      : matchIds.map(mid => {
+          const m = seasonStats[mid];
+          const r = m.result || { golesFavor:0, golesContra:0 };
+          return `<div class="log-item">${m.label || mid}: ${r.golesFavor} - ${r.golesContra}</div>`;
+        }).reverse().join("");
+  }
+
+  function updateOfficialField(field, value){
+    if(!statsMatchRef) return;
+    const trimmed = String(value).trim();
+    const n = trimmed === "" ? null : Math.max(0, parseInt(trimmed, 10) || 0);
+    statsMatchRef.update({ [`officialTable.${field}`]: n }).catch(err => {
+      alert("No se pudo guardar: " + err.message);
+    });
+  }
+
+  function renderOfficialTable(){
+    const off = (seasonStats[MATCH_ID] && seasonStats[MATCH_ID].officialTable) || {};
+    const fields = { offPos:"pos", offPts:"pts", offPj:"pj", offPg:"pg", offPe:"pe", offPp:"pp", offGf:"gf", offGc:"gc" };
+    Object.entries(fields).forEach(([elId, key]) => {
+      const el = document.getElementById(elId);
+      const val = off[key];
+      if(el && document.activeElement !== el) el.value = (val === null || val === undefined) ? "" : val;
+    });
+    const dg = (off.gf === null || off.gf === undefined || off.gc === null || off.gc === undefined)
+      ? "pendiente"
+      : (off.gf - off.gc > 0 ? `+${off.gf - off.gc}` : off.gf - off.gc);
+    document.getElementById("offDgDisplay").textContent = dg;
+  }
+
+  function saveBackfillFecha(){
+    const id = document.getElementById("backfillId").value.trim();
+    const label = document.getElementById("backfillLabel").value.trim();
+    if(!id){ alert("Escribe un ID de fecha, ej. 2026-08-15"); return; }
+    const readField = (elId) => {
+      const raw = document.getElementById(elId).value.trim();
+      return raw === "" ? null : Math.max(0, parseInt(raw, 10) || 0);
+    };
+    const officialTable = {
+      pos: readField("bfPos"),
+      pts: readField("bfPts"),
+      pj: readField("bfPj"),
+      pg: readField("bfPg"),
+      pe: readField("bfPe"),
+      pp: readField("bfPp"),
+      gf: readField("bfGf"),
+      gc: readField("bfGc"),
+    };
+    statsCollectionRef.doc(id).set({ label: label || id, officialTable }, { merge: true })
+      .then(() => alert(`Guardado: ${label || id}`))
+      .catch(err => alert("No se pudo guardar: " + err.message));
+  }
+
+  function renderOfficialProgression(){
+    const el = document.getElementById("officialProgression");
+    if(!el) return;
+    const ids = Object.keys(seasonStats)
+      .filter(id => seasonStats[id].officialTable)
+      .sort();
+    if(ids.length === 0){
+      el.innerHTML = `<span class="log-empty">Sin datos de tabla oficial todavía</span>`;
+      return;
+    }
+    const fmt = (v) => (v === null || v === undefined) ? "?" : v;
+    el.innerHTML = ids.map(id => {
+      const m = seasonStats[id];
+      const o = m.officialTable;
+      const hasGoals = o.gf !== null && o.gf !== undefined && o.gc !== null && o.gc !== undefined;
+      const dg = hasGoals ? (o.gf - o.gc) : null;
+      const dgLabel = !hasGoals ? "pendiente" : (dg > 0 ? `+${dg}` : dg);
+      return `<div class="log-item">${m.label || id}: puesto ${fmt(o.pos)} · ${fmt(o.pts)} pts (PJ${fmt(o.pj)} PG${fmt(o.pg)} PE${fmt(o.pe)} PP${fmt(o.pp)}, GF${fmt(o.gf)} GC${fmt(o.gc)}, DG${dgLabel})</div>`;
+    }).join("");
+  }
+
+  ["offPos","offPts","offPj","offPg","offPe","offPp","offGf","offGc"].forEach(elId => {
+    const field = elId.replace("off","").toLowerCase();
+    document.getElementById(elId).addEventListener("change", (e) => updateOfficialField(field, e.target.value));
+  });
+  document.getElementById("saveBackfillBtn").addEventListener("click", saveBackfillFecha);
+
+  document.getElementById("golesFavorInput").addEventListener("change", (e) => updateResult("golesFavor", e.target.value));
+  document.getElementById("golesContraInput").addEventListener("change", (e) => updateResult("golesContra", e.target.value));
+  document.getElementById("sortByGoalsBtn").addEventListener("click", () => { statsSortMode = "goals"; renderSeasonStats(); });
+  document.getElementById("sortByAttendanceBtn").addEventListener("click", () => { statsSortMode = "attendance"; renderSeasonStats(); });
+
   document.getElementById("undoBtn").addEventListener("click", undoLast);
-  document.getElementById("clearLogBtn").addEventListener("click", clearChangeLog);
   initWhoAmI();
 
   renderAll();
   initFirebase(renderAll);
+  initStatsFirestore();
 </script>
 </body>
 </html>
