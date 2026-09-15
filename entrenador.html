@@ -229,7 +229,7 @@
 
 <header>
   <h1>⚽ Entrenador · Promoción 2004</h1>
-  <p>Fútbol 6 · Complejo · Sáb 12/09 · 7:40 pm · 5ta fecha</p>
+  <p>Fútbol 6 · Complejo · Sáb 19/09 · 7:40 pm · 6ta fecha · vs Promoción 1998</p>
   <p class="status" id="connStatus">Conectando…</p>
   <p class="whoami" id="whoamiLine"></p>
 </header>
@@ -351,10 +351,9 @@
   <section class="panel">
     <h2>Calendario restante</h2>
     <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">
-      Lo que queda de la fase regular, más la fecha final.
+      Lo que sigue después de la fecha de arriba, más la fecha final.
     </p>
     <div class="log">
-      <div class="log-item">6ta fecha (confirmado): vs Promoción 1998</div>
       <div class="log-item">7ma fecha (estimado): Descanso</div>
       <div class="log-item">8va fecha (estimado): Descanso</div>
       <div class="log-item">9na fecha (estimado): vs Promoción 2006</div>
@@ -362,7 +361,7 @@
       <div class="log-item">11va fecha (estimado): Fecha final</div>
     </div>
     <p style="font-size:10.5px; color:var(--text-muted); margin-top:8px;">
-      La 6ta fecha ya sale en el fixture oficial. El resto (5 sábados de fase regular + 1 de fecha final) es lo conversado, falta que el organizador lo confirme.
+      Esto es lo conversado, falta que el organizador lo confirme fecha por fecha.
     </p>
   </section>
 
@@ -1043,14 +1042,15 @@
     { id:"2026-08-15", label:"1ra fecha", officialTable:{ pos:2, pts:3, pj:1, pg:1, pe:0, pp:0, gf:3, gc:1 } },
     { id:"2026-08-22", label:"2da fecha", officialTable:{ pos:5, pts:3, pj:2, pg:1, pe:0, pp:1, gf:4, gc:5 } },
     { id:"2026-08-29", label:"3ra fecha", officialTable:{ pos:3, pts:3, pj:3, pg:1, pe:0, pp:2, gf:4, gc:7 } },
-    { id:"2026-09-05", label:"4ta fecha", officialTable:{ pos:4, pts:6, pj:4, pg:2, pe:0, pp:2, gf:5, gc:7 } }
+    { id:"2026-09-05", label:"4ta fecha", officialTable:{ pos:4, pts:6, pj:4, pg:2, pe:0, pp:2, gf:5, gc:7 } },
+    { id:"2026-09-12", label:"5ta fecha", officialTable:{ pos:2, pts:9, pj:5, pg:3, pe:0, pp:2, gf:7, gc:8 } }
   ];
-  const CURRENT_FECHA_OFFICIAL_TABLE = { pos:2, pts:9, pj:5, pg:3, pe:0, pp:2, gf:7, gc:8 }; // 5ta fecha (hoy)
 
   // Completa seasonStats con la tabla histórica de arriba para las fechas
-  // que Firestore todavía no tenga guardadas (por ahora, ninguna: las
-  // reglas de seguridad bloquean el guardado). Así se ve igual aunque
-  // nunca se haya podido escribir en la base de datos.
+  // que Firestore todavía no tenga guardadas. Así se ve igual aunque
+  // nunca se haya podido escribir en la base de datos. La fecha actual
+  // (MATCH_ID) no lleva dato acá: todavía no se juega, su tabla oficial
+  // se carga después, cuando el organizador la publique.
   function applyStaticOfficialFallback(){
     HISTORICAL_OFFICIAL_TABLE.forEach(f => {
       if(!seasonStats[f.id]){
@@ -1059,20 +1059,16 @@
         seasonStats[f.id].officialTable = f.officialTable;
       }
     });
-    if(seasonStats[MATCH_ID] && !seasonStats[MATCH_ID].officialTable){
-      seasonStats[MATCH_ID].officialTable = CURRENT_FECHA_OFFICIAL_TABLE;
-    }
   }
 
   // Guarda la tabla histórica de arriba en Firestore de una sola vez,
   // para que quede compartida (no solo como respaldo en este dispositivo).
   function importHistoricalOfficialTable(){
-    if(!statsCollectionRef || !statsMatchRef){ alert("Firebase no está configurado todavía."); return; }
+    if(!statsCollectionRef){ alert("Firebase no está configurado todavía."); return; }
     if(!confirm("¿Guardar en Firestore la tabla oficial de la 1ra a la 5ta fecha? Esto sobrescribe lo que haya guardado para esas fechas.")) return;
     const writes = HISTORICAL_OFFICIAL_TABLE.map(f =>
       statsCollectionRef.doc(f.id).set({ label: f.label, officialTable: f.officialTable }, { merge:true })
     );
-    writes.push(statsMatchRef.set({ officialTable: CURRENT_FECHA_OFFICIAL_TABLE }, { merge:true }));
     Promise.all(writes)
       .then(() => alert("Tabla histórica guardada."))
       .catch(err => alert("No se pudo guardar: " + err.message));

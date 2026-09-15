@@ -17,8 +17,8 @@ const FIREBASE_CONFIG = {
   appId: "1:882535263793:web:e8b77bc14e4d3a478def10"
 };
 
-const MATCH_ID = "2026-09-12";
-const MATCH_LABEL = "Sáb 12/09 · 7:40 pm · 5ta fecha";
+const MATCH_ID = "2026-09-19";
+const MATCH_LABEL = "Sáb 19/09 · 7:40 pm · 6ta fecha · vs Promoción 1998";
 
 // Roster base: id, nombre, posición de referencia (tag).
 // El estado "confirmed" y la posición elegida en vivo viven en Firestore.
