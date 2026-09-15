@@ -80,6 +80,22 @@
   }
   .log-empty{font-size:12px; color:var(--text-muted); font-style:italic;}
 
+  .standings-toggle{
+    width:100%; background:none; border:none; padding:0; margin:0;
+    display:flex; align-items:center; justify-content:space-between;
+    cursor:pointer; -webkit-tap-highlight-color:transparent; font-family:inherit;
+  }
+  .standings-toggle h2{margin:0;}
+  .standings-toggle .chev{color:var(--text-muted); font-size:11px; transition:transform .15s ease;}
+  .standings-toggle[aria-expanded="true"] .chev{transform:rotate(180deg);}
+  #standingsBody{margin-top:12px;}
+  .standings-row{display:flex; flex-wrap:wrap; gap:14px; margin-bottom:10px;}
+  .standings-stat .v{font-size:18px; font-weight:700; line-height:1.2;}
+  .standings-stat .l{font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px;}
+  .trend-wrap{margin-top:14px;}
+  .trend-label{font-size:11px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px;}
+  .trend-list{font-size:10.5px; color:var(--text-muted); margin-top:6px; line-height:1.6;}
+
   /* Modal */
   .overlay{
     position:fixed; inset:0; background:rgba(0,0,0,.55); display:none;
@@ -129,6 +145,21 @@
     <div class="chips" id="rosterList"></div>
   </section>
 
+  <section class="panel">
+    <button class="standings-toggle" id="standingsToggle" type="button" aria-expanded="false" aria-controls="standingsBody">
+      <h2>Tabla de posiciones</h2>
+      <span class="chev">▾</span>
+    </button>
+    <div id="standingsBody" hidden>
+      <div id="standingsSummary"></div>
+      <div class="trend-wrap">
+        <div class="trend-label">Puntos por fecha</div>
+        <svg id="trendChart" viewBox="0 0 300 110" role="img" aria-label="Evolución de puntos por fecha" style="width:100%; height:auto; display:block;"></svg>
+        <div id="trendList" class="trend-list"></div>
+      </div>
+    </div>
+  </section>
+
 </div>
 
 <div class="overlay" id="whoOverlay">
@@ -169,6 +200,114 @@
 
   renderAll();
   initFirebase(renderAll);
+
+  // ============================================================
+  // Tabla de posiciones + tendencia de puntos (solo lectura).
+  // Colapsado por defecto para no estorbar la asistencia, que es
+  // la acción principal de esta página.
+  // ============================================================
+  const standingsToggle = document.getElementById("standingsToggle");
+  const standingsBody = document.getElementById("standingsBody");
+  standingsToggle.addEventListener("click", () => {
+    const expanded = standingsToggle.getAttribute("aria-expanded") === "true";
+    standingsToggle.setAttribute("aria-expanded", String(!expanded));
+    standingsBody.hidden = expanded;
+  });
+
+  function fechaShortLabel(label){
+    return (label || "").split(" ")[0];
+  }
+
+  function renderStandings(fechas){
+    const summaryEl = document.getElementById("standingsSummary");
+    const listEl = document.getElementById("trendList");
+    const svg = document.getElementById("trendChart");
+
+    if(fechas.length === 0){
+      summaryEl.innerHTML = `<span class="log-empty">Todavía no hay tabla oficial cargada</span>`;
+      svg.innerHTML = "";
+      listEl.innerHTML = "";
+      return;
+    }
+
+    const last = fechas[fechas.length - 1];
+    const o = last.officialTable;
+    const dg = (typeof o.gf === "number" && typeof o.gc === "number") ? o.gf - o.gc : null;
+    summaryEl.innerHTML = `
+      <div class="standings-row">
+        <div class="standings-stat"><div class="v">${o.pos ?? "?"}°</div><div class="l">Posición</div></div>
+        <div class="standings-stat"><div class="v">${o.pts ?? "?"}</div><div class="l">Puntos</div></div>
+        <div class="standings-stat"><div class="v">${o.pj ?? "?"}</div><div class="l">PJ</div></div>
+        <div class="standings-stat"><div class="v">${dg === null ? "?" : (dg > 0 ? "+" + dg : dg)}</div><div class="l">DG</div></div>
+      </div>
+      <p style="font-size:10.5px; color:var(--text-muted); margin:0;">
+        ${last.label}: ${o.pg ?? "?"}G ${o.pe ?? "?"}E ${o.pp ?? "?"}P · ${o.gf ?? "?"}-${o.gc ?? "?"}
+      </p>
+    `;
+
+    const trend = fechas.filter(f => typeof f.officialTable.pts === "number");
+    if(trend.length === 0){
+      svg.innerHTML = "";
+      listEl.innerHTML = "";
+      return;
+    }
+
+    const W = 300, H = 110, padL = 16, padR = 16, padT = 18, padB = 20;
+    const maxPts = Math.max(...trend.map(f => f.officialTable.pts), 1);
+    const stepX = trend.length > 1 ? (W - padL - padR) / (trend.length - 1) : 0;
+    const scaleY = (v) => H - padB - (v / maxPts) * (H - padT - padB);
+    const coords = trend.map((f, i) => ({ x: padL + i * stepX, y: scaleY(f.officialTable.pts), f }));
+
+    const linePath = coords.map((c, i) => `${i === 0 ? "M" : "L"}${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(" ");
+    const baselineY = H - padB;
+
+    const dots = coords.map((c, i) => {
+      const isLast = i === coords.length - 1;
+      const label = `${c.f.label}: ${c.f.officialTable.pts} pts`;
+      return `
+        <circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${isLast ? 5 : 3.5}" fill="var(--accent)">
+          <title>${label}</title>
+        </circle>
+        ${isLast ? `<text x="${c.x.toFixed(1)}" y="${(c.y - 10).toFixed(1)}" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">${c.f.officialTable.pts}</text>` : ""}
+      `;
+    }).join("");
+
+    const labels = coords.map(c =>
+      `<text x="${c.x.toFixed(1)}" y="${H - 5}" font-size="9" fill="var(--text-muted)" text-anchor="middle">${fechaShortLabel(c.f.label)}</text>`
+    ).join("");
+
+    svg.innerHTML = `
+      <line x1="${padL}" y1="${baselineY}" x2="${W - padR}" y2="${baselineY}" stroke="var(--border)" stroke-width="1"/>
+      <path d="${linePath}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      ${dots}
+      ${labels}
+    `;
+
+    listEl.innerHTML = trend.map(f => `${fechaShortLabel(f.label)}: ${f.officialTable.pts} pts (pos ${f.officialTable.pos ?? "?"}°)`).join(" · ");
+  }
+
+  function initStandings(){
+    try{
+      const db = firebase.firestore();
+      db.collection("seasons").doc(SEASON_ID).collection("matches").onSnapshot(snap => {
+        const fechas = [];
+        snap.forEach(doc => {
+          const data = doc.data();
+          if(data && data.officialTable){
+            fechas.push({ id: doc.id, label: data.label || doc.id, officialTable: data.officialTable });
+          }
+        });
+        fechas.sort((a, b) => a.id.localeCompare(b.id));
+        renderStandings(fechas);
+      }, err => {
+        console.error(err);
+      });
+    }catch(err){
+      console.error(err);
+    }
+  }
+
+  initStandings();
 </script>
 </body>
 </html>

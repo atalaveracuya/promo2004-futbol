@@ -20,6 +20,11 @@ const FIREBASE_CONFIG = {
 const MATCH_ID = "2026-09-19";
 const MATCH_LABEL = "Sáb 19/09 · 7:40 pm · 6ta fecha · vs Promoción 1998";
 
+// Identifica la temporada para la tabla oficial / estadísticas
+// (colección seasons/{SEASON_ID}/matches). Cambia esto solo cuando
+// arranque una temporada nueva. Usado por index.html y entrenador.html.
+const SEASON_ID = "2026";
+
 // Roster base: id, nombre, posición de referencia (tag).
 // El estado "confirmed" y la posición elegida en vivo viven en Firestore.
 const BASE_ROSTER = {
