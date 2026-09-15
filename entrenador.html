@@ -337,6 +337,11 @@
       </div>
     </details>
 
+    <button class="btn primary" id="importHistoricalBtn" style="margin-top:14px; width:100%;">Importar tabla histórica (1ra a 5ta fecha)</button>
+    <p style="font-size:10.5px; color:var(--text-muted); margin-top:6px;">
+      Carga de una sola vez la fila de Promoción 2004 de las tablas oficiales que ya salieron (1ra a 5ta fecha). La 3ra fecha va corregida: perdimos ese partido, no empatamos.
+    </p>
+
     <div style="margin-top:14px;">
       <div style="font-size:11px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px;">Evolución en la tabla</div>
       <div class="log" id="officialProgression"></div>
@@ -349,15 +354,15 @@
       Lo que queda de la fase regular, más la fecha final.
     </p>
     <div class="log">
-      <div class="log-item">1️⃣ vs Promoción 1998</div>
-      <div class="log-item">2️⃣ Descanso</div>
-      <div class="log-item">3️⃣ Descanso</div>
-      <div class="log-item">4️⃣ vs Promoción 2006</div>
-      <div class="log-item">5️⃣ vs Promoción 2001</div>
-      <div class="log-item">6️⃣ Fecha final (adicional)</div>
+      <div class="log-item">6ta fecha (confirmado): vs Promoción 1998</div>
+      <div class="log-item">7ma fecha (estimado): Descanso</div>
+      <div class="log-item">8va fecha (estimado): Descanso</div>
+      <div class="log-item">9na fecha (estimado): vs Promoción 2006</div>
+      <div class="log-item">10ma fecha (estimado): vs Promoción 2001</div>
+      <div class="log-item">11va fecha (estimado): Fecha final</div>
     </div>
     <p style="font-size:10.5px; color:var(--text-muted); margin-top:8px;">
-      5 sábados de fase regular + 1 sábado adicional de fecha final = 6 sábados en total.
+      La 6ta fecha ya sale en el fixture oficial. El resto (5 sábados de fase regular + 1 de fecha final) es lo conversado, falta que el organizador lo confirme.
     </p>
   </section>
 
@@ -1022,6 +1027,33 @@
     document.getElementById("offDgDisplay").textContent = dg;
   }
 
+  // ============================================================
+  // Importación única de la tabla oficial ya publicada (1ra a 5ta fecha).
+  // Solo la fila de Promoción 2004. La 3ra fecha va corregida: la tabla
+  // del organizador mostraba 1 empate y 1 derrota, pero en realidad
+  // perdimos ese partido (lo confirma la 4ta fecha, que ya arrastra
+  // 2 derrotas en vez de 1 empate + 1 derrota).
+  // ============================================================
+  const HISTORICAL_OFFICIAL_TABLE = [
+    { id:"2026-08-15", label:"1ra fecha", officialTable:{ pos:2, pts:3, pj:1, pg:1, pe:0, pp:0, gf:3, gc:1 } },
+    { id:"2026-08-22", label:"2da fecha", officialTable:{ pos:5, pts:3, pj:2, pg:1, pe:0, pp:1, gf:4, gc:5 } },
+    { id:"2026-08-29", label:"3ra fecha", officialTable:{ pos:3, pts:3, pj:3, pg:1, pe:0, pp:2, gf:4, gc:5 } },
+    { id:"2026-09-05", label:"4ta fecha", officialTable:{ pos:4, pts:6, pj:4, pg:2, pe:0, pp:2, gf:5, gc:7 } }
+  ];
+  const CURRENT_FECHA_OFFICIAL_TABLE = { pos:2, pts:9, pj:5, pg:3, pe:0, pp:2, gf:7, gc:8 }; // 5ta fecha (hoy)
+
+  function importHistoricalOfficialTable(){
+    if(!statsCollectionRef || !statsMatchRef){ alert("Firebase no está configurado todavía."); return; }
+    if(!confirm("¿Importar la tabla oficial de la 1ra a la 5ta fecha? Esto sobrescribe lo que haya guardado para esas fechas.")) return;
+    const writes = HISTORICAL_OFFICIAL_TABLE.map(f =>
+      statsCollectionRef.doc(f.id).set({ label: f.label, officialTable: f.officialTable }, { merge:true })
+    );
+    writes.push(statsMatchRef.set({ officialTable: CURRENT_FECHA_OFFICIAL_TABLE }, { merge:true }));
+    Promise.all(writes)
+      .then(() => alert("Tabla histórica importada."))
+      .catch(err => alert("No se pudo importar: " + err.message));
+  }
+
   function saveBackfillFecha(){
     const id = document.getElementById("backfillId").value.trim();
     const label = document.getElementById("backfillLabel").value.trim();
@@ -1071,6 +1103,7 @@
     document.getElementById(elId).addEventListener("change", (e) => updateOfficialField(field, e.target.value));
   });
   document.getElementById("saveBackfillBtn").addEventListener("click", saveBackfillFecha);
+  document.getElementById("importHistoricalBtn").addEventListener("click", importHistoricalOfficialTable);
 
   document.getElementById("golesFavorInput").addEventListener("change", (e) => updateResult("golesFavor", e.target.value));
   document.getElementById("golesContraInput").addEventListener("change", (e) => updateResult("golesContra", e.target.value));
