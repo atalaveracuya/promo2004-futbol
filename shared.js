@@ -18,11 +18,11 @@ const FIREBASE_CONFIG = {
 };
 
 const MATCH_ID = "2026-10-03";
-// Sáb 03/10 no hay fecha por las elecciones municipales y regionales:
-// la 8va fecha se posterga. Se mantiene MATCH_ID para no perder las
+// Fechas suspendidas por las elecciones municipales y regionales hasta
+// el siguiente sábado: la 8va fecha se posterga y aún no tiene fecha. Se mantiene MATCH_ID para no perder las
 // posiciones ya cargadas; cuando el organizador dé la nueva fecha,
 // solo se cambia la etiqueta.
-const MATCH_LABEL = "8va fecha · vs Promoción 2001 · Postergada, fecha por confirmar";
+const MATCH_LABEL = "8va fecha · vs Promoción 2001 · Postergada por elecciones, aún sin fecha";
 
 // Identifica la temporada para la tabla oficial / estadísticas
 // (colección seasons/{SEASON_ID}/matches). Cambia esto solo cuando
