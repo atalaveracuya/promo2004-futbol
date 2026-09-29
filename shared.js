@@ -26,30 +26,34 @@ const MATCH_LABEL = "Sáb 03/10 · 7:40 pm · 8va fecha · vs Promoción 2001";
 const SEASON_ID = "2026";
 
 // Roster base: id, nombre, posición de referencia (tag).
-// El estado "confirmed" y la posición elegida en vivo viven en Firestore.
+// La posición de cada jugador no cambia de fecha a fecha: el tag de acá
+// es la última posición confirmada en la historia (5ta y 6ta fecha).
+// Cada partido nuevo arranca con la última posición confirmada de cada
+// uno (ver lastConfirmedPositions); si alguien la cambia, desde ahí
+// se arrastra a las fechas siguientes. "confirmed" es solo del partido.
 const BASE_ROSTER = {
-  p1:{name:"Víctor Espinoza", tag:""},
-  p2:{name:"Walter Fernández", tag:""},
+  p1:{name:"Víctor Espinoza", tag:"DEF"},
+  p2:{name:"Walter Fernández", tag:"DEL"},
   p3:{name:"Erick Talavera", tag:"VOL"},
-  p4:{name:"Faviani Solís", tag:""},
+  p4:{name:"Faviani Solís", tag:"VOL"},
   p5:{name:"Derrick Miranda", tag:"VOL"},
-  p6:{name:"Renzo Chumpitaz", tag:""},
-  p7:{name:"Renzo Yaya", tag:"VOL"},
-  p8:{name:"Ernesto Vásquez", tag:"DEF"},
-  p9:{name:"Eberth Morillo", tag:""},
-  p10:{name:"Oscar Bustamante", tag:"DEF"},
+  p6:{name:"Renzo Chumpitaz", tag:"DEF"},
+  p7:{name:"Renzo Yaya", tag:"DEF"},
+  p8:{name:"Ernesto Vásquez", tag:"DEL"},
+  p9:{name:"Eberth Morillo", tag:"DEF"},
+  p10:{name:"Oscar Bustamante", tag:"VOL"},
   p11:{name:"Fernando Ramírez", tag:"DEL"},
-  p12:{name:"Gilberto Vásquez", tag:""},
-  p13:{name:"Ademir Paucar", tag:""},
+  p12:{name:"Gilberto Vásquez", tag:"DEL"},
+  p13:{name:"Ademir Paucar", tag:"ARQ"},
   p14:{name:"Willy García", tag:"ARQ"},
   p15:{name:"Brayan García", tag:"VOL"},
   p16:{name:"Luigi Chumbes", tag:"DEF"},
-  p17:{name:"Miguel Chumpitaz", tag:""},
-  p18:{name:"Daniel Torres", tag:""},
-  p19:{name:"José Camacho", tag:""},
+  p17:{name:"Miguel Chumpitaz", tag:"VOL"},
+  p18:{name:"Daniel Torres", tag:"DEF"},
+  p19:{name:"José Camacho", tag:"VOL"},
   p20:{name:"Jorge Purizaca", tag:"DEF"},
-  p21:{name:"Jorge Bautista", tag:""},
-  p22:{name:"Andrés Talavera", tag:""}
+  p21:{name:"Jorge Bautista", tag:"VOL"},
+  p22:{name:"Andrés Talavera", tag:"ARQ"}
 };
 
 // ============================================================
@@ -137,6 +141,25 @@ function confirmActingForOther(targetId){
   return confirm(`Te anotaste como ${meName}. Estás por cambiar a ${targetName}, no a ti. ¿Seguro que quieres continuar?`);
 }
 
+// Junta las posiciones confirmadas en los partidos anteriores a
+// MATCH_ID, en orden: la más reciente de cada jugador gana. Así la
+// posición queda registrada y pasa sola de una fecha a la siguiente.
+// Si no se puede leer la historia, arranca vacío y se usa el tag del
+// roster base.
+function lastConfirmedPositions(db){
+  return db.collection("matches").get().then(qs => {
+    const docs = qs.docs.filter(d => d.id < MATCH_ID).sort((a, b) => a.id.localeCompare(b.id));
+    const merged = {};
+    docs.forEach(d => {
+      const pos = (d.data() || {}).positions || {};
+      Object.keys(pos).forEach(id => {
+        if(BASE_ROSTER[id] && pos[id]) merged[id] = pos[id];
+      });
+    });
+    return merged;
+  }).catch(() => ({}));
+}
+
 function initFirebase(callback){
   onMatchUpdate = callback;
   try{
@@ -149,7 +172,9 @@ function initFirebase(callback){
       if(!snap.exists){
         const initialConfirmed = {};
         Object.keys(BASE_ROSTER).forEach(id => { initialConfirmed[id] = false; });
-        matchRef.set({ label: MATCH_LABEL, confirmed: initialConfirmed, extraPlayers: {}, positions: {}, confirmedBy: {} });
+        lastConfirmedPositions(db).then(positions => {
+          matchRef.set({ label: MATCH_LABEL, confirmed: initialConfirmed, extraPlayers: {}, positions, confirmedBy: {} });
+        });
       }
     });
 
@@ -244,7 +269,7 @@ function openPositionPicker(id){
   if(!matchRef){ alert("Firebase no está configurado todavía."); return; }
   activePosPlayerId = id;
   const p = getPlayer(id);
-  document.getElementById("posSheetTitle").textContent = `Posición de ${p.name}`;
+  document.getElementById("posSheetTitle").textContent = `Confirmar posición de ${p.name}`;
   document.getElementById("posOverlay").classList.add("open");
 }
 
