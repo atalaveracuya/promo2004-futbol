@@ -17,8 +17,8 @@ const FIREBASE_CONFIG = {
   appId: "1:882535263793:web:e8b77bc14e4d3a478def10"
 };
 
-const MATCH_ID = "2026-09-19";
-const MATCH_LABEL = "Sáb 19/09 · 7:40 pm · 6ta fecha · vs Promoción 1998";
+const MATCH_ID = "2026-10-03";
+const MATCH_LABEL = "Sáb 03/10 · 8va fecha · vs Promoción 2001";
 
 // Identifica la temporada para la tabla oficial / estadísticas
 // (colección seasons/{SEASON_ID}/matches). Cambia esto solo cuando
