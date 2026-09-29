@@ -17,12 +17,11 @@ const FIREBASE_CONFIG = {
   appId: "1:882535263793:web:e8b77bc14e4d3a478def10"
 };
 
-const MATCH_ID = "2026-10-03";
-// Fechas suspendidas por las elecciones municipales y regionales hasta
-// el siguiente sábado: la 8va fecha se posterga y aún no tiene fecha. Se mantiene MATCH_ID para no perder las
-// posiciones ya cargadas; cuando el organizador dé la nueva fecha,
-// solo se cambia la etiqueta.
-const MATCH_LABEL = "8va fecha · vs Promoción 2001 · Postergada por elecciones, aún sin fecha";
+const MATCH_ID = "2026-10-10";
+// El sáb 03/10 no hubo fecha por las elecciones municipales y regionales;
+// la 8va fecha pasó al sáb 10/10. Las posiciones del 03/10 se arrastran
+// solas (ver lastConfirmedPositions).
+const MATCH_LABEL = "Sáb 10/10 · 7:40 pm · 8va fecha · vs Promoción 2001";
 
 // Identifica la temporada para la tabla oficial / estadísticas
 // (colección seasons/{SEASON_ID}/matches). Cambia esto solo cuando
