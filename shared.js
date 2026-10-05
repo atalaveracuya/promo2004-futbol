@@ -21,7 +21,7 @@ const MATCH_ID = "2026-10-10";
 // El sáb 03/10 no hubo fecha por las elecciones municipales y regionales;
 // la 8va fecha pasó al sáb 10/10. Las posiciones del 03/10 se arrastran
 // solas (ver lastConfirmedPositions).
-const MATCH_LABEL = "Sáb 10/10 · 7:40 pm · 8va fecha · vs Promoción 2001";
+const MATCH_LABEL = "Sáb 10/10 · 4:20 pm · 8va fecha · vs Promoción 2001";
 
 // Identifica la temporada para la tabla oficial / estadísticas
 // (colección seasons/{SEASON_ID}/matches). Cambia esto solo cuando
