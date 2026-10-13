@@ -1145,7 +1145,44 @@
         seasonStats[f.id].officialTable = f.officialTable;
       }
     });
+    // Goleadores y resultado de partidos ya jugados (según la planilla del
+    // partido). Solo se usan si Firestore no tiene datos de jugadores para
+    // esa fecha; si ya se cargaron ahí, esos mandan.
+    Object.entries(STATIC_MATCH_STATS).forEach(([id, st]) => {
+      if(!seasonStats[id]) seasonStats[id] = { label: st.label };
+      const m = seasonStats[id];
+      if(!m.players || Object.keys(m.players).length === 0) m.players = st.players;
+      if(!m.result || (!m.result.golesFavor && !m.result.golesContra)) m.result = st.result;
+      if(!m.label) m.label = st.label;
+    });
   }
+
+  // Goles de la 1ra a la 7ma fecha según nuestro registro (Excel de cruce con
+  // la lista de la comisión): suman 10, igual que el GF de la tabla oficial.
+  // No tenemos el detalle por fecha, así que van juntos en la 1ra fecha, solo
+  // como goles (sin marcar asistencia, para no alterar PJ ni %Asist.).
+  const STATIC_MATCH_STATS = {
+    "2026-08-15": {
+      label: "1ra fecha",
+      result: { golesFavor:3, golesContra:1 },
+      players: {
+        p8:{ goals:3 },  // Ernesto Vásquez
+        p11:{ goals:2 }, // Fernando Ramírez
+        p12:{ goals:2 }, // Gilberto Vásquez
+        p15:{ goals:1 }, // Brayan García
+        p2:{ goals:1 },  // Walter Fernández
+        p10:{ goals:1 }  // Oscar Bustamante
+      }
+    },
+    "2026-10-10": {
+      label: "8va fecha vs Promoción 2001",
+      result: { golesFavor:5, golesContra:0 },
+      players: {
+        p12:{ attended:true, goals:3 }, // Gilberto Vásquez
+        p7:{ attended:true, goals:2 }   // Renzo Yaya
+      }
+    }
+  };
 
   // Guarda la tabla histórica de arriba en Firestore de una sola vez,
   // para que quede compartida (no solo como respaldo en este dispositivo).
