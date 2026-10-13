@@ -87,6 +87,12 @@
     cursor:pointer; -webkit-tap-highlight-color:transparent; font-family:inherit;
   }
   .standings-toggle h2{margin:0;}
+  .scorers-table{width:100%; border-collapse:collapse; font-size:13px;}
+  .scorers-table th{font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; font-weight:600; text-align:left; padding:6px 4px; border-bottom:1px solid var(--border);}
+  .scorers-table td{padding:8px 4px; border-bottom:1px solid var(--border);}
+  .scorers-table th.num, .scorers-table td.num{text-align:right; width:15%;}
+  .scorers-table td.total{font-weight:700; color:var(--accent);}
+  .scorers-table td.dash{color:var(--text-muted);}
   .standings-toggle .chev{color:var(--text-muted); font-size:11px; transition:transform .15s ease;}
   .standings-toggle[aria-expanded="true"] .chev{transform:rotate(180deg);}
   #standingsBody{margin-top:12px;}
@@ -236,6 +242,19 @@
         <button class="race-btn" id="raceNextBtn" type="button" aria-label="Fecha siguiente">›</button>
       </div>
       <div class="race-container" id="raceContainer"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <button class="standings-toggle" id="scorersToggle" type="button" aria-expanded="false" aria-controls="scorersBody">
+      <h2>Goleadores</h2>
+      <span class="chev">▾</span>
+    </button>
+    <div id="scorersBody" hidden>
+      <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">
+        Goles acumulados de Promoción 2004 hasta la 8va fecha.
+      </p>
+      <div id="scorersTable"></div>
     </div>
   </section>
 
@@ -439,6 +458,48 @@
   }
 
   initStandings();
+
+  // ============================================================
+  // Goleadores de Promoción 2004 (data fija, según nuestro registro).
+  // Para sumar una fecha nueva: actualizar "hasta7" y "f8" o agregar
+  // una columna. Total = suma de las columnas.
+  // ============================================================
+  const SCORERS = [
+    { name:"Gilberto Vásquez", hasta7:2, f8:3 },
+    { name:"Ernesto Vásquez",  hasta7:3, f8:0 },
+    { name:"Fernando Ramírez", hasta7:2, f8:0 },
+    { name:"Renzo Yaya",       hasta7:0, f8:2 },
+    { name:"Brayan García",    hasta7:1, f8:0 },
+    { name:"Walter Fernández", hasta7:1, f8:0 },
+    { name:"Derrick Miranda",  hasta7:1, f8:0 }
+  ];
+
+  function renderScorers(){
+    const el = document.getElementById("scorersTable");
+    const cell = (n) => n > 0 ? `<td class="num">${n}</td>` : `<td class="num dash">–</td>`;
+    const rows = SCORERS
+      .map(p => ({ ...p, total: p.hasta7 + p.f8 }))
+      .sort((a, b) => (b.total - a.total) || a.name.localeCompare(b.name, "es"));
+    const sum = rows.reduce((acc, r) => acc + r.total, 0);
+    el.innerHTML = `
+      <table class="scorers-table">
+        <thead><tr><th>Jugador</th><th class="num">Hasta 7ma</th><th class="num">8va</th><th class="num">Total</th></tr></thead>
+        <tbody>
+          ${rows.map(r => `<tr><td>${r.name}</td>${cell(r.hasta7)}${cell(r.f8)}<td class="num total">${r.total}</td></tr>`).join("")}
+          <tr><td><strong>Total</strong></td><td class="num">${rows.reduce((a, r) => a + r.hasta7, 0)}</td><td class="num">${rows.reduce((a, r) => a + r.f8, 0)}</td><td class="num total">${sum}</td></tr>
+        </tbody>
+      </table>
+    `;
+  }
+  renderScorers();
+
+  const scorersToggle = document.getElementById("scorersToggle");
+  const scorersBody = document.getElementById("scorersBody");
+  scorersToggle.addEventListener("click", () => {
+    const expanded = scorersToggle.getAttribute("aria-expanded") === "true";
+    scorersToggle.setAttribute("aria-expanded", String(!expanded));
+    scorersBody.hidden = expanded;
+  });
 
   // ============================================================
   // Ranking animado del grupo (bar chart race), Grupo 02 completo.
