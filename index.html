@@ -187,7 +187,7 @@
 
 <header>
   <h1>⚽ Promoción 2004</h1>
-  <p>Fútbol 6 · Complejo · Sáb 10/10 · 4:20 pm · 8va fecha · vs Promoción 2001</p>
+  <p>Fútbol 6 · Complejo · Sáb 17/10 · hora por confirmar · 9na fecha · vs Promoción 2006</p>
   <p class="status" id="connStatus">Conectando…</p>
   <p class="whoami" id="whoamiLine"></p>
 </header>
@@ -394,19 +394,42 @@
     listEl.innerHTML = trend.map(f => `${fechaShortLabel(f.label)}: ${f.officialTable.pts} pts (pos ${f.officialTable.pos ?? "?"}°)`).join(" · ");
   }
 
+  // Respaldo fijo con la fila de Promoción 2004 de la tabla oficial (1ra a 8va).
+  // La 7ma fecha descansamos: se mantiene 2° con 12 pts. Si Firestore tiene
+  // una fecha guardada, esa gana; si no, se usa esta, así la tabla nunca
+  // se queda corta aunque la base de datos no tenga las últimas fechas.
+  const STATIC_OFFICIAL_TABLE = [
+    { id:"2026-08-15", label:"1ra fecha", officialTable:{ pos:2, pts:3, pj:1, pg:1, pe:0, pp:0, gf:3, gc:1 } },
+    { id:"2026-08-22", label:"2da fecha", officialTable:{ pos:5, pts:3, pj:2, pg:1, pe:0, pp:1, gf:4, gc:5 } },
+    { id:"2026-08-29", label:"3ra fecha", officialTable:{ pos:3, pts:3, pj:3, pg:1, pe:0, pp:2, gf:4, gc:7 } },
+    { id:"2026-09-05", label:"4ta fecha", officialTable:{ pos:4, pts:6, pj:4, pg:2, pe:0, pp:2, gf:5, gc:7 } },
+    { id:"2026-09-12", label:"5ta fecha", officialTable:{ pos:2, pts:9, pj:5, pg:3, pe:0, pp:2, gf:7, gc:8 } },
+    { id:"2026-09-19", label:"6ta fecha", officialTable:{ pos:2, pts:12, pj:6, pg:4, pe:0, pp:2, gf:10, gc:9 } },
+    { id:"2026-09-26", label:"7ma fecha · descansamos", officialTable:{ pos:2, pts:12, pj:6, pg:4, pe:0, pp:2, gf:10, gc:9 } },
+    { id:"2026-10-10", label:"Sáb 10/10 · 8va fecha · vs Promoción 2001 (5-0)", officialTable:{ pos:2, pts:15, pj:7, pg:5, pe:0, pp:2, gf:15, gc:9 } }
+  ];
+
+  let remoteOfficial = {};
+  function mergedFechas(){
+    const map = {};
+    STATIC_OFFICIAL_TABLE.forEach(f => { map[f.id] = f; });
+    Object.values(remoteOfficial).forEach(f => { map[f.id] = f; });
+    return Object.values(map).sort((a, b) => a.id.localeCompare(b.id));
+  }
+
   function initStandings(){
+    renderStandings(mergedFechas());
     try{
       const db = firebase.firestore();
       db.collection("seasons").doc(SEASON_ID).collection("matches").onSnapshot(snap => {
-        const fechas = [];
+        remoteOfficial = {};
         snap.forEach(doc => {
           const data = doc.data();
           if(data && data.officialTable){
-            fechas.push({ id: doc.id, label: data.label || doc.id, officialTable: data.officialTable });
+            remoteOfficial[doc.id] = { id: doc.id, label: data.label || doc.id, officialTable: data.officialTable };
           }
         });
-        fechas.sort((a, b) => a.id.localeCompare(b.id));
-        renderStandings(fechas);
+        renderStandings(mergedFechas());
       }, err => {
         console.error(err);
       });
@@ -480,6 +503,13 @@
       "1998":{pg:3,pe:0,pp:3,gf:10,gc:10}, "2000":{pg:3,pe:0,pp:3,gf:9,gc:11},
       "2006":{pg:1,pe:3,pp:2,gf:12,gc:13}, "2001":{pg:1,pe:2,pp:3,gf:6,gc:13},
       "1999":{pg:1,pe:0,pp:5,gf:3,gc:23}
+    }},
+    { id:"2026-10-10", label:"8va fecha", teams:{
+      "2005":{pg:6,pe:1,pp:1,gf:20,gc:5}, "2004":{pg:5,pe:0,pp:2,gf:15,gc:9},
+      "2002":{pg:3,pe:1,pp:3,gf:16,gc:10}, "2003":{pg:2,pe:4,pp:1,gf:13,gc:4},
+      "1998":{pg:3,pe:0,pp:4,gf:10,gc:11}, "2000":{pg:3,pe:1,pp:3,gf:10,gc:12},
+      "2006":{pg:1,pe:4,pp:2,gf:13,gc:14}, "2001":{pg:1,pe:2,pp:4,gf:6,gc:18},
+      "1999":{pg:1,pe:1,pp:5,gf:4,gc:24}
     }}
   ];
 
