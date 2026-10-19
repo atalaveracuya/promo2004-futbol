@@ -101,6 +101,12 @@
   .rv-table th:first-child, .rv-table td:first-child{text-align:left; padding-left:0;}
   .rv-table td{text-align:right; padding:7px 3px; border-bottom:1px solid var(--border);}
   .rv-table td.best{font-weight:700; color:var(--accent);}
+  .foda{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;}
+  .foda > div{background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:9px 10px; font-size:11.5px; line-height:1.45;}
+  .foda h4{margin:0 0 5px; font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--accent);}
+  .foda ul{margin:0; padding-left:15px;}
+  .foda li{margin:0 0 4px;}
+  @media (max-width:420px){ .foda{grid-template-columns:1fr;} }
   .rv-summary{font-size:12px; line-height:1.5; margin:10px 0 0;}
   .rv-summary p{margin:0 0 8px;}
   .standings-toggle .chev{color:var(--text-muted); font-size:11px; transition:transform .15s ease;}
@@ -289,6 +295,65 @@
         <p><strong>2003 (3°, 13 pts, DG +11):</strong> empató con 2002 y 2000 en puntos y se quedó con el 3° por diferencia de gol. Tiene la mejor defensa del grupo (4 goles en contra en 8 partidos) y 4 empates, pero marcó solo 15 goles.</p>
         <p><strong>Nosotros (2°, DG +11):</strong> el segundo mejor ataque (21 goles) y 6 victorias en 8 partidos.</p>
         <p style="font-size:10px; color:var(--text-muted);">Análisis tras la 9na fecha. Las tablas y el gráfico se actualizan con cada fecha cargada; este resumen hay que actualizarlo a mano.</p>
+      </div>
+      <div class="trend-label" style="margin-top:14px;">Comparativo: 2004 vs 2003</div>
+      <table class="rv-table">
+        <thead><tr><th></th><th>2004</th><th>2003</th></tr></thead>
+        <tbody>
+          <tr><td>Posición · puntos</td><td class="best">2° · 18</td><td>3° · 13</td></tr>
+          <tr><td>G-E-P</td><td>6-0-2</td><td>3-4-1</td></tr>
+          <tr><td>Goles a favor</td><td class="best">21 (2,6 por partido)</td><td>15 (1,9)</td></tr>
+          <tr><td>Goles en contra</td><td>10 (1,25 por partido)</td><td class="best">4 (0,5)</td></tr>
+          <tr><td>Diferencia de gol</td><td>+11</td><td>+11</td></tr>
+          <tr><td>Puntos por partido</td><td class="best">2,25</td><td>1,63</td></tr>
+          <tr><td>Racha</td><td>5 victorias seguidas (17 a favor, 3 en contra)</td><td>5 sin perder: 3G, 2E (14 a favor, 2 en contra)</td></tr>
+        </tbody>
+      </table>
+      <div class="rv-summary">
+        <p><strong>Antecedente:</strong> por el calendario, el único cruce posible fue en la 4ta fecha (05/09). Las tablas cuadran con un 1-0 a nuestro favor, la única derrota de 2003 en el torneo.</p>
+        <p><strong>Ataque:</strong> es nuestra ventaja, metemos casi un gol más por partido. <strong>Defensa:</strong> es la suya, recibe 0,5 goles por partido contra nuestros 1,25. La diferencia de gol de 2003 depende de un solo resultado, un 9-0 contra 1999.</p>
+      </div>
+
+      <div class="trend-label" style="margin-top:14px;">FODA de Promoción 2003</div>
+      <div class="foda">
+        <div>
+          <h4>Fortalezas</h4>
+          <ul>
+            <li>Mejor defensa del grupo: 4 goles en contra en 8 partidos, nunca más de 1 por partido.</li>
+            <li>Una sola derrota en el torneo (contra nosotros).</li>
+            <li>Empató 1-1 con 2005, el campeón del grupo, y le ganó 1-0 a 2002.</li>
+            <li>5 partidos sin perder.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Debilidades</h4>
+          <ul>
+            <li>Casi no marca: en 6 de 8 partidos hizo 1 gol o ninguno.</li>
+            <li>9 de sus 15 goles vinieron en un solo partido (9-0). En los otros 7 hizo 6 goles.</li>
+            <li>Sus goleadas fueron contra rivales de la parte baja (1999 y 1998).</li>
+            <li>4 empates en 8 partidos.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Oportunidades</h4>
+          <ul>
+            <li>Llega como 3°, sin ser favorito: la presión es nuestra.</li>
+            <li>Si se adelanta, su estilo cerrado le permite defender la ventaja.</li>
+            <li>Un partido a todo o nada se parece a los 1-0 y 0-0 que ya sabe jugar.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Amenazas</h4>
+          <ul>
+            <li>Nuestro ataque: 5 victorias seguidas con 17 goles.</li>
+            <li>Si recibe un gol temprano tendrá que salir a marcar, lo que menos hace.</li>
+            <li>Ya perdió contra nosotros en este torneo.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rv-summary">
+        <p><strong>Clave para nosotros:</strong> marcar primero. Tenemos más goles, pero 2003 concede muy poco, y un empate en los minutos finales le favorece más a ellos.</p>
+        <p style="font-size:10px; color:var(--text-muted);">Análisis hecho solo con los números de la tabla, sin datos de jugadores ni alineaciones.</p>
       </div>
     </div>
   </section>
