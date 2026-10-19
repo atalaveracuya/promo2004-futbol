@@ -17,11 +17,11 @@ const FIREBASE_CONFIG = {
   appId: "1:882535263793:web:e8b77bc14e4d3a478def10"
 };
 
-const MATCH_ID = "2026-10-17";
+const MATCH_ID = "2026-10-24";
 // El sáb 03/10 no hubo fecha por las elecciones; la 8va fecha se jugó el 10/10
-// (ganamos 5-0 a Promoción 2001). La 9na es vs Promoción 2006 (descansa 2005). Las posiciones del 03/10 se arrastran
+// (ganamos 5-0 a Promoción 2001). La 9na (17/10) fue vs Promoción 2006. Clasificamos 2° y la semifinal es el 24/10 vs Promoción 2003. Las posiciones del 03/10 se arrastran
 // solas (ver lastConfirmedPositions).
-const MATCH_LABEL = "Sáb 17/10 · hora por confirmar · 9na fecha · vs Promoción 2006";
+const MATCH_LABEL = "Sáb 24/10 · 3:40 pm · Semifinal Grupo Los Dinos · vs Promoción 2003";
 
 // Identifica la temporada para la tabla oficial / estadísticas
 // (colección seasons/{SEASON_ID}/matches). Cambia esto solo cuando

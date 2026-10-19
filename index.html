@@ -203,7 +203,7 @@
 
 <header>
   <h1>⚽ Promoción 2004</h1>
-  <p>Fútbol 6 · Complejo · Sáb 17/10 · hora por confirmar · 9na fecha · vs Promoción 2006</p>
+  <p>Fútbol 6 · Complejo · Sáb 24/10 · 3:40 pm · Semifinal Grupo Los Dinos · vs Promoción 2003</p>
   <p class="status" id="connStatus">Conectando…</p>
   <p class="whoami" id="whoamiLine"></p>
 </header>
@@ -270,12 +270,12 @@
 
   <section class="panel">
     <button class="standings-toggle" id="rivalsToggle" type="button" aria-expanded="false" aria-controls="rivalsBody">
-      <h2>Rivales por el 3°</h2>
+      <h2>Rival de semifinal</h2>
       <span class="chev">▾</span>
     </button>
     <div id="rivalsBody" hidden>
       <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">
-        Los tres que vienen detrás de nosotros (2003, 2002 y 2000) pelean por el 3° puesto, nuestro posible rival de semifinal.
+        Terminamos 2° y enfrentamos al 3° del grupo: Promoción 2003. Se compara con 2002 y 2000, que empataron con 13 pts y quedaron 4° y 5°.
       </p>
       <div class="trend-label">Puntos acumulados por fecha</div>
       <div class="rv-legend" id="rivalsLegend"></div>
@@ -285,12 +285,10 @@
       <p style="font-size:10px; color:var(--text-muted); margin:6px 0 0;">G-E-P = ganados, empatados, perdidos. En negrita, el mejor valor de cada fila.</p>
       <div class="trend-label" style="margin-top:14px;">Resumen</div>
       <div class="rv-summary" id="rivalsSummary">
-        <p>Somos 2° con 15 pts. Los tres tienen 10 pts y ninguno puede alcanzarnos: llegarían a 13 como máximo.</p>
-        <p><strong>2003 (3°, DG +9):</strong> la mejor defensa (4 goles en contra) y una sola derrota. Su ataque es flojo: 9 de sus 13 goles vinieron en una goleada.</p>
-        <p><strong>2002 (4°, DG +6):</strong> el más irregular. Fue líder en la 3ra fecha, perdió 3 de 4 partidos y cayó al 4°. Tiene el mejor ataque de los tres.</p>
-        <p><strong>2000 (5°, DG −2):</strong> viene peor. Tiene la peor defensa (12 en contra) y es el que menos chances tiene del 3°.</p>
-        <p><strong>Quién sería 3°:</strong> los tres promedian 1,43 pts por partido, así que probablemente decida la diferencia de gol, que hoy favorece a 2003. Pero 2003 juega contra 1998 (6°, 9 pts), el rival más difícil de la 9na fecha. 2002 juega contra 2001 (último) y 2000 contra 1999 (8°). Si 2003 no gana, los otros dos le pueden pasar.</p>
-        <p style="font-size:10px; color:var(--text-muted);">Análisis tras la 8va fecha. Las tablas y el gráfico se actualizan con cada fecha cargada; este resumen hay que actualizarlo a mano.</p>
+        <p>Terminamos 2° con 18 pts y jugamos la semifinal contra el 3°: <strong>Promoción 2003</strong>, sáb 24/10 a las 3:40 pm (Grupo Los Dinos). La otra semifinal es 2005 vs 2002 a las 4:20 pm.</p>
+        <p><strong>2003 (3°, 13 pts, DG +11):</strong> empató con 2002 y 2000 en puntos y se quedó con el 3° por diferencia de gol. Tiene la mejor defensa del grupo (4 goles en contra en 8 partidos) y 4 empates, pero marcó solo 15 goles.</p>
+        <p><strong>Nosotros (2°, DG +11):</strong> el segundo mejor ataque (21 goles) y 6 victorias en 8 partidos.</p>
+        <p style="font-size:10px; color:var(--text-muted);">Análisis tras la 9na fecha. Las tablas y el gráfico se actualizan con cada fecha cargada; este resumen hay que actualizarlo a mano.</p>
       </div>
     </div>
   </section>
@@ -462,7 +460,8 @@
     { id:"2026-09-12", label:"5ta fecha", officialTable:{ pos:2, pts:9, pj:5, pg:3, pe:0, pp:2, gf:7, gc:8 } },
     { id:"2026-09-19", label:"6ta fecha", officialTable:{ pos:2, pts:12, pj:6, pg:4, pe:0, pp:2, gf:10, gc:9 } },
     { id:"2026-09-26", label:"7ma fecha · descansamos", officialTable:{ pos:2, pts:12, pj:6, pg:4, pe:0, pp:2, gf:10, gc:9 } },
-    { id:"2026-10-10", label:"Sáb 10/10 · 8va fecha · vs Promoción 2001 (5-0)", officialTable:{ pos:2, pts:15, pj:7, pg:5, pe:0, pp:2, gf:15, gc:9 } }
+    { id:"2026-10-10", label:"Sáb 10/10 · 8va fecha · vs Promoción 2001 (5-0)", officialTable:{ pos:2, pts:15, pj:7, pg:5, pe:0, pp:2, gf:15, gc:9 } },
+    { id:"2026-10-17", label:"Sáb 17/10 · 9na fecha · vs Promoción 2006 (6-1)", officialTable:{ pos:2, pts:18, pj:8, pg:6, pe:0, pp:2, gf:21, gc:10 } }
   ];
 
   let remoteOfficial = {};
@@ -608,6 +607,13 @@
       "1998":{pg:3,pe:0,pp:4,gf:10,gc:11}, "2000":{pg:3,pe:1,pp:3,gf:10,gc:12},
       "2006":{pg:1,pe:4,pp:2,gf:13,gc:14}, "2001":{pg:1,pe:2,pp:4,gf:6,gc:18},
       "1999":{pg:1,pe:1,pp:5,gf:4,gc:24}
+    }},
+    { id:"2026-10-17", label:"9na fecha", teams:{
+      "2005":{pg:6,pe:1,pp:1,gf:20,gc:5}, "2004":{pg:6,pe:0,pp:2,gf:21,gc:10},
+      "2002":{pg:4,pe:1,pp:3,gf:19,gc:10}, "2003":{pg:3,pe:4,pp:1,gf:15,gc:4},
+      "1998":{pg:3,pe:0,pp:5,gf:10,gc:13}, "2000":{pg:4,pe:1,pp:3,gf:22,gc:14},
+      "2006":{pg:1,pe:4,pp:3,gf:14,gc:20}, "2001":{pg:1,pe:2,pp:5,gf:6,gc:21},
+      "1999":{pg:1,pe:1,pp:6,gf:6,gc:36}
     }}
   ];
 
