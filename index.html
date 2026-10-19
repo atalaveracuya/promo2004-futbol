@@ -984,11 +984,11 @@
       { c:"them", t:`${RIVAL} lleva ${b.pe} empate${b.pe === 1 ? "" : "s"} en ${b.pj} partidos.` }
     ];
     const win = a.pts + 3;
-    let stake = `Si ganamos llegamos a ${win} puntos.`;
-    if(leader.code !== OUR_TEAM){
-      const lp = leader.pts;
-      stake += ` Promoción ${leader.code} es primero con ${lp} pts` + (win > lp ? `: si ellos pierden, quedamos primeros.` : `.`);
-    }
+    //let stake = `Si ganamos llegamos a ${win} puntos.`;
+    //if(leader.code !== OUR_TEAM){
+    //  const lp = leader.pts;
+    //  stake += ` Promoción ${leader.code} es primero con ${lp} pts` + (win > lp ? `: si ellos pierden, quedamos primeros.` : `.`);
+    //}
     keys.push({ c:"us", t: stake });
     document.getElementById("duelKeys").innerHTML = keys.map(k => `<li class="${k.c}">${k.t}</li>`).join("");
   }
