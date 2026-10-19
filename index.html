@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Promoción 2004 - Anótate</title>
+
+<!-- Vista previa al compartir el link (WhatsApp, Telegram, etc.) -->
+<meta property="og:title" content="⚽ Promoción 2004 - Anótate al partido">
+<meta property="og:description" content="Marca si vienes al partido del sábado y confirma tu posición desde tu celular.">
+<meta property="og:image" content="https://atalaveracuya.github.io/promo2004-futbol/preview.png">
+<meta property="og:url" content="https://atalaveracuya.github.io/promo2004-futbol/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{
+    --bg:#15100b; --card:#241a10; --card2:#2e2114; --accent:#e2a730;
+    --accent-dark:#a97a1f; --text:#f6efe1; --text-muted:#b7a58c;
+    --border:#3c2c1a; --rival:#5b9df0; --rival-dark:#3a78c4;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:var(--bg); color:var(--text); padding-bottom:40px;
+  }
+  header{
+    padding:16px 16px 8px; text-align:center; position:sticky; top:0;
+    background:var(--bg); z-index:5; border-bottom:1px solid var(--border);
+  }
+  header h1{font-size:17px; margin:0 0 2px; font-weight:600;}
+  header p{font-size:12px; color:var(--text-muted); margin:0;}
+  header .status{font-size:10.5px; color:var(--text-muted); margin-top:4px;}
+  header .status.live{color:var(--accent);}
+  header .whoami{font-size:10.5px; color:var(--text-muted); margin-top:4px;}
+  .who-change{
+    background:none; border:none; color:var(--accent); font-size:10.5px;
+    text-decoration:underline; cursor:pointer; padding:0; font-family:inherit;
+  }
+  .by-note{color:var(--text-muted); font-weight:400; font-size:10.5px;}
+  .wrap{max-width:480px; margin:0 auto; padding:12px;}
+
+  section.panel{
+    background:var(--card); border:1px solid var(--border); border-radius:14px;
+    padding:14px; margin-top:14px;
+  }
+  section.panel h2{font-size:13px; margin:0 0 10px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:.5px;}
+  .panel-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+  .panel-head h2{margin:0;}
+  .add-btn{
+    background:var(--accent); color:#17110a; border:none; border-radius:20px;
+    padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip-group{
+    display:inline-flex; align-items:stretch; background:var(--card2);
+    border:1px solid var(--border); border-radius:20px; overflow:hidden;
+  }
+  .chip-name{
+    background:transparent; border:none; color:var(--text); font-size:12.5px;
+    padding:8px 10px; cursor:pointer; -webkit-tap-highlight-color:transparent; font-family:inherit;
+  }
+  .chip-name:active{background:var(--accent-dark);}
+  .chip-pos{
+    background:rgba(255,255,255,.06); border:none; border-left:1px solid var(--border);
+    color:var(--text-muted); font-size:10.5px; font-weight:700; letter-spacing:.3px;
+    padding:8px 9px; cursor:pointer; -webkit-tap-highlight-color:transparent; font-family:inherit;
+  }
+  .chip-pos:active{background:var(--accent-dark); color:var(--text);}
+  .chip-pos.set{color:var(--text);}
+  .chip-remove{
+    background:rgba(198,91,78,.15); border:none; border-left:1px solid var(--border);
+    color:#e08a7d; font-size:11px; font-weight:700; padding:8px 9px;
+    cursor:pointer; -webkit-tap-highlight-color:transparent; font-family:inherit;
+  }
+  .chip-remove:active{background:rgba(198,91,78,.35);}
+  .dot-confirmed{
+    display:inline-block; margin-right:4px; vertical-align:middle;
+    font-size:12px;
+  }
+  .log-empty{font-size:12px; color:var(--text-muted); font-style:italic;}
+
+  .standings-toggle{
+    width:100%; background:none; border:none; padding:0; margin:0;
+    display:flex; align-items:center; justify-content:space-between;
+    cursor:pointer; -webkit-tap-highlight-color:transparent; font-family:inherit;
+  }
+  .standings-toggle h2{margin:0;}
+  .scorers-table{width:100%; border-collapse:collapse; font-size:13px;}
+  .scorers-table th{font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; font-weight:600; text-align:left; padding:6px 4px; border-bottom:1px solid var(--border);}
+  .scorers-table td{padding:8px 4px; border-bottom:1px solid var(--border);}
+  .scorers-table th.num, .scorers-table td.num{text-align:right; width:15%;}
+  .scorers-table td.total{font-weight:700; color:var(--accent);}
+  .scorers-table td.dash{color:var(--text-muted);}
+  .rv-legend{display:flex; flex-wrap:wrap; gap:6px 14px; margin:6px 0 8px; font-size:11px; color:var(--text-muted);}
+  .rv-legend span{display:inline-flex; align-items:center; gap:5px;}
+  .rv-legend i{display:inline-block; width:14px; height:3px; border-radius:2px;}
+  .rv-table{width:100%; border-collapse:collapse; font-size:12px; margin-top:6px;}
+  .rv-table th{font-size:10px; color:var(--text-muted); font-weight:600; text-align:right; padding:6px 3px; border-bottom:1px solid var(--border);}
+  .rv-table th:first-child, .rv-table td:first-child{text-align:left; padding-left:0;}
+  .rv-table td{text-align:right; padding:7px 3px; border-bottom:1px solid var(--border);}
+  .rv-table td.best{font-weight:700; color:var(--accent);}
+  .foda{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;}
+  .foda > div{background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:9px 10px; font-size:11.5px; line-height:1.45;}
+  .foda h4{margin:0 0 5px; font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--accent);}
+  .foda ul{margin:0; padding-left:15px;}
+  .foda li{margin:0 0 4px;}
+  @media (max-width:420px){ .foda{grid-template-columns:1fr;} }
+  .rv-summary{font-size:12px; line-height:1.5; margin:10px 0 0;}
+  .rv-summary p{margin:0 0 8px;}
+  .standings-toggle .chev{color:var(--text-muted); font-size:11px; transition:transform .15s ease;}
+  .standings-toggle[aria-expanded="true"] .chev{transform:rotate(180deg);}
+  #standingsBody{margin-top:12px;}
+  .standings-row{display:flex; flex-wrap:wrap; gap:14px; margin-bottom:10px;}
+  .standings-stat .v{font-size:18px; font-weight:700; line-height:1.2;}
+  .standings-stat .l{font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px;}
+  .trend-wrap{margin-top:14px;}
+  .trend-label{font-size:11px; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px;}
+  .trend-list{font-size:10.5px; color:var(--text-muted); margin-top:6px; line-height:1.6;}
+
+  .race-controls{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+  .race-btn{
+    background:var(--card2); border:1px solid var(--border); border-radius:8px;
+    color:var(--text); font-size:14px; padding:6px 12px; cursor:pointer;
+    -webkit-tap-highlight-color:transparent; font-family:inherit; line-height:1;
+  }
+  .race-btn:active{background:var(--accent-dark);}
+  .race-fecha{flex:1; text-align:center; font-size:12px; color:var(--text-muted); font-weight:600;}
+  .race-container{position:relative;}
+  .race-row{
+    position:absolute; left:0; right:0; top:0; height:26px;
+    display:flex; align-items:center; gap:6px;
+    transition:transform .6s ease;
+  }
+  .race-name{
+    flex:0 0 92px; width:92px; font-size:10.5px; color:var(--text-muted);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .race-row.us .race-name{color:var(--text); font-weight:700;}
+  .race-track{flex:1; background:var(--card2); border-radius:4px; height:14px; position:relative; overflow:hidden;}
+  .race-fill{
+    position:absolute; left:0; top:0; bottom:0; border-radius:4px;
+    background:var(--border); transition:width .6s ease;
+  }
+  .race-row.us .race-fill{background:var(--accent);}
+  .race-value{
+    flex:0 0 22px; width:22px; text-align:right; font-size:10.5px;
+    color:var(--text-muted); font-variant-numeric:tabular-nums;
+  }
+  .race-row.us .race-value{color:var(--text); font-weight:700;}
+
+  /* Previa del partido: nosotros (dorado) vs rival (azul) */
+  .duel-score{display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:6px; margin-bottom:12px;}
+  .duel-side{padding:10px; border-radius:10px; background:var(--card2); min-width:0;}
+  .duel-side.us{border-left:4px solid var(--accent);}
+  .duel-side.them{border-right:4px solid var(--rival); text-align:right;}
+  .duel-team{font-size:22px; font-weight:800; line-height:1.1;}
+  .duel-sub{font-size:10.5px; color:var(--text-muted); font-variant-numeric:tabular-nums;}
+  .duel-vs{font-size:13px; font-weight:800; color:var(--text-muted); text-align:center; line-height:1.2;}
+  .duel-vs small{display:block; font-size:9.5px; font-weight:500;}
+  .duel-legend{display:flex; gap:14px; font-size:10.5px; color:var(--text-muted); margin-bottom:4px;}
+  .duel-legend i{display:inline-block; width:12px; height:3px; border-radius:2px; margin-right:5px; vertical-align:middle;}
+  .duel-tap{font-size:10.5px; color:var(--text-muted); min-height:15px; margin-top:4px; font-variant-numeric:tabular-nums;}
+  .duel-rows{display:flex; flex-direction:column; gap:7px; margin-top:6px;}
+  .duel-row{display:grid; grid-template-columns:34px 1fr 74px 1fr 34px; align-items:center; gap:5px;}
+  .duel-row .n{font-size:13px; font-weight:700; font-variant-numeric:tabular-nums;}
+  .duel-row .n.l{text-align:right;}
+  .duel-row .k{font-size:9.5px; color:var(--text-muted); text-align:center; line-height:1.15; font-weight:600;}
+  .duel-track{height:16px; display:flex;}
+  .duel-track.l{justify-content:flex-end;}
+  .duel-bar{height:100%; border-radius:4px; transition:width .6s ease;}
+  .duel-bar.us{background:repeating-linear-gradient(135deg,var(--accent) 0 7px,var(--accent-dark) 7px 9px);}
+  .duel-bar.them{background:repeating-linear-gradient(45deg,var(--rival) 0 7px,var(--rival-dark) 7px 9px);}
+  .duel-bar.win{box-shadow:0 0 0 2px var(--card),0 0 0 3.5px var(--text);}
+  .duel-keys{margin:12px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:6px;}
+  .duel-keys li{font-size:12px; line-height:1.45; padding-left:10px; border-left:3px solid var(--border);}
+  .duel-keys li.us{border-color:var(--accent);} .duel-keys li.them{border-color:var(--rival);}
+  @media (prefers-reduced-motion:reduce){.duel-bar{transition:none;}}
+
+  /* Modal */
+  .overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.55); display:none;
+    align-items:flex-end; justify-content:center; z-index:20;
+  }
+  .overlay.open{display:flex;}
+  .sheet{
+    background:var(--card); width:100%; max-width:480px; border-radius:18px 18px 0 0;
+    padding:16px; max-height:75vh; overflow-y:auto;
+    animation:slideUp .18s ease-out;
+  }
+  @keyframes slideUp{from{transform:translateY(20px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+  .sheet h3{margin:0 0 4px; font-size:15px;}
+  .sheet p.sub{margin:0 0 14px; font-size:12px; color:var(--text-muted);}
+  .pick{
+    width:100%; text-align:left; padding:12px 14px; border-radius:10px; margin-bottom:8px;
+    background:var(--card2); border:1px solid var(--border); color:var(--text);
+    font-size:14px; cursor:pointer;
+  }
+  .pick:active{background:var(--accent-dark);}
+  .sheet .close{
+    display:block; width:100%; margin-top:6px; padding:12px; border-radius:10px;
+    background:transparent; border:1px solid var(--border); color:var(--text-muted);
+    font-size:13px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚽ Promoción 2004</h1>
+  <p>Fútbol 6 · Complejo · Sáb 24/10 · 3:40 pm · Semifinal Grupo Los Dinos · vs Promoción 2003</p>
+  <p>🏆 Partido definitorio para la gran final · si hay empate, se define por penales</p>
+  <p class="status" id="connStatus">Conectando…</p>
+  <p class="whoami" id="whoamiLine"></p>
+</header>
+
+<div class="wrap">
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Asistencia</h2>
+      <button class="add-btn" id="addPlayerBtn" type="button">+ Agregar</button>
+    </div>
+    <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">
+      Toca tu nombre para anotarte 🔥, y toca tu posición para elegirla. Se guarda para todos, en vivo.
+    </p>
+    <div class="chips" id="rosterList"></div>
+  </section>
+
+  <section class="panel">
+    <button class="standings-toggle" id="standingsToggle" type="button" aria-expanded="false" aria-controls="standingsBody">
+      <h2>Tabla de posiciones</h2>
+      <span class="chev">▾</span>
+    </button>
+    <div id="standingsBody" hidden>
+      <div id="standingsSummary"></div>
+      <div class="trend-wrap">
+        <div class="trend-label">Puntos por fecha</div>
+        <svg id="trendChart" viewBox="0 0 300 110" role="img" aria-label="Evolución de puntos por fecha" style="width:100%; height:auto; display:block;"></svg>
+        <div id="trendList" class="trend-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <button class="standings-toggle" id="raceToggle" type="button" aria-expanded="false" aria-controls="raceBody">
+      <h2>Ranking del grupo</h2>
+      <span class="chev">▾</span>
+    </button>
+    <div id="raceBody" hidden>
+      <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">
+        Evolución de puntos de las 9 promociones del Grupo 02, fecha a fecha.
+      </p>
+      <div class="race-controls">
+        <button class="race-btn" id="racePrevBtn" type="button" aria-label="Fecha anterior">‹</button>
+        <button class="race-btn" id="racePlayBtn" type="button" aria-label="Reproducir">▶</button>
+        <div class="race-fecha" id="raceFechaLabel"></div>
+        <button class="race-btn" id="raceNextBtn" type="button" aria-label="Fecha siguiente">›</button>
+      </div>
+      <div class="race-container" id="raceContainer"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <button class="standings-toggle" id="scorersToggle" type="button" aria-expanded="false" aria-controls="scorersBody">
+      <h2>Goleadores</h2>
+      <span class="chev">▾</span>
+    </button>
+    <div id="scorersBody" hidden>
+      <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">
+        Goles acumulados de Promoción 2004 hasta la 9na fecha.
+      </p>
+      <div id="scorersTable"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <button class="standings-toggle" id="rivalsToggle" type="button" aria-expanded="false" aria-controls="rivalsBody">
+      <h2>Rival de semifinal</h2>
+      <span class="chev">▾</span>
+    </button>
+    <div id="rivalsBody" hidden>
+      <p style="font-size:11px; color:var(--text-muted); margin:-4px 0 10px;">
+        Terminamos 2° y enfrentamos al 3° del grupo: Promoción 2003. Se compara con 2002 y 2000, que empataron con 13 pts y quedaron 4° y 5°.
+      </p>
+      <div class="trend-label">Puntos acumulados por fecha</div>
+      <div class="rv-legend" id="rivalsLegend"></div>
+      <svg id="rivalsChart" viewBox="0 0 300 160" role="img" aria-label="Puntos acumulados por fecha: 2004, 2003, 2002 y 2000" style="width:100%; height:auto; display:block;"></svg>
+      <div class="trend-label" style="margin-top:14px;" id="rivalsStatsTitle">Estadísticas comparativas</div>
+      <div style="overflow-x:auto;"><table class="rv-table" id="rivalsTable"></table></div>
+      <p style="font-size:10px; color:var(--text-muted); margin:6px 0 0;">G-E-P = ganados, empatados, perdidos. En negrita, el mejor valor de cada fila.</p>
+      <div class="trend-label" style="margin-top:14px;">Resumen</div>
+      <div class="rv-summary" id="rivalsSummary">
+        <p>Terminamos 2° con 18 pts y jugamos la semifinal contra el 3°: <strong>Promoción 2003</strong>, sáb 24/10 a las 3:40 pm (Grupo Los Dinos). La otra semifinal es 2005 vs 2002 a las 4:20 pm.</p>
+        <p><strong>2003 (3°, 13 pts, DG +11):</strong> empató con 2002 y 2000 en puntos y se quedó con el 3° por diferencia de gol. Tiene la mejor defensa del grupo (4 goles en contra en 8 partidos) y 4 empates, pero marcó solo 15 goles.</p>
+        <p><strong>Nosotros (2°, DG +12):</strong> el segundo mejor ataque (22 goles) y 6 victorias en 8 partidos. Venimos de ganar 7-1 a Promoción 2006.</p>
+        <p><strong>Formato:</strong> es un partido definitorio para la gran final. Si el tiempo reglamentario termina empatado, se define por penales.</p>
+        <p style="font-size:10px; color:var(--text-muted);">Análisis tras la 9na fecha. Las tablas y el gráfico se actualizan con cada fecha cargada; este resumen hay que actualizarlo a mano.</p>
+      </div>
+      <div class="trend-label" style="margin-top:14px;">Comparativo: 2004 vs 2003</div>
+      <table class="rv-table">
+        <thead><tr><th></th><th>2004</th><th>2003</th></tr></thead>
+        <tbody>
+          <tr><td>Posición · puntos</td><td class="best">2° · 18</td><td>3° · 13</td></tr>
+          <tr><td>G-E-P</td><td>6-0-2</td><td>3-4-1</td></tr>
+          <tr><td>Goles a favor</td><td class="best">22 (2,75 por partido)</td><td>15 (1,9)</td></tr>
+          <tr><td>Goles en contra</td><td>10 (1,25 por partido)</td><td class="best">4 (0,5)</td></tr>
+          <tr><td>Diferencia de gol</td><td class="best">+12</td><td>+11</td></tr>
+          <tr><td>Puntos por partido</td><td class="best">2,25</td><td>1,63</td></tr>
+          <tr><td>Racha</td><td>5 victorias seguidas (18 a favor, 3 en contra)</td><td>5 sin perder: 3G, 2E (14 a favor, 2 en contra)</td></tr>
+        </tbody>
+      </table>
+      <div class="rv-summary">
+        <p><strong>Antecedente:</strong> por el calendario, el único cruce posible fue en la 4ta fecha (05/09). Las tablas cuadran con un 1-0 a nuestro favor, la única derrota de 2003 en el torneo.</p>
+        <p><strong>Ataque:</strong> es nuestra ventaja, metemos casi un gol más por partido. <strong>Defensa:</strong> es la suya, recibe 0,5 goles por partido contra nuestros 1,25. La diferencia de gol de 2003 depende de un solo resultado, un 9-0 contra 1999.</p>
+      </div>
+
+      <div class="trend-label" style="margin-top:14px;">FODA de Promoción 2003</div>
+      <div class="foda">
+        <div>
+          <h4>Fortalezas</h4>
+          <ul>
+            <li>Mejor defensa del grupo: 4 goles en contra en 8 partidos, nunca más de 1 por partido.</li>
+            <li>Una sola derrota en el torneo (contra nosotros).</li>
+            <li>Empató 1-1 con 2005, el campeón del grupo, y le ganó 1-0 a 2002.</li>
+            <li>5 partidos sin perder.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Debilidades</h4>
+          <ul>
+            <li>Casi no marca: en 6 de 8 partidos hizo 1 gol o ninguno.</li>
+            <li>9 de sus 15 goles vinieron en un solo partido (9-0). En los otros 7 hizo 6 goles.</li>
+            <li>Sus goleadas fueron contra rivales de la parte baja (1999 y 1998).</li>
+            <li>4 empates en 8 partidos.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Oportunidades</h4>
+          <ul>
+            <li>Llega como 3°, sin ser favorito: la presión es nuestra.</li>
+            <li>Si se adelanta, su estilo cerrado le permite defender la ventaja.</li>
+            <li>Un partido a todo o nada se parece a los 1-0 y 0-0 que ya sabe jugar.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Amenazas</h4>
+          <ul>
+            <li>Nuestro ataque: 5 victorias seguidas con 18 goles.</li>
+            <li>Si recibe un gol temprano tendrá que salir a marcar, lo que menos hace.</li>
+            <li>Ya perdió contra nosotros en este torneo.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rv-summary">
+        <p><strong>Clave para nosotros:</strong> marcar primero. Tenemos más goles, pero 2003 concede muy poco, y un empate en los minutos finales le favorece más a ellos, porque lleva el partido a penales. Conviene tener definidos los pateadores y el arquero antes del partido.</p>
+        <p style="font-size:10px; color:var(--text-muted);">Análisis hecho solo con los números de la tabla, sin datos de jugadores ni alineaciones.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="previaPanel" hidden>
+    <button class="standings-toggle" id="previaToggle" type="button" aria-expanded="false" aria-controls="previaBody">
+      <h2 id="previaTitle">Previa del partido</h2>
+      <span class="chev">▾</span>
+    </button>
+    <div id="previaBody" hidden>
+      <div class="duel-score" id="duelScore"></div>
+      <div class="trend-label">Puntos acumulados por fecha</div>
+      <div class="duel-legend" id="duelLegend"></div>
+      <svg id="duelChart" viewBox="0 0 300 150" role="img" aria-label="Puntos acumulados por fecha de ambos equipos" style="width:100%; height:auto; display:block;"></svg>
+      <div class="duel-tap" id="duelTap">Toca una fecha para ver los puntos.</div>
+      <div class="trend-label" style="margin-top:14px;">Cara a cara en la tabla</div>
+      <p style="font-size:10.5px; color:var(--text-muted); margin:0;">La barra con borde lleva ventaja. En perdidos y goles en contra, menos es mejor.</p>
+      <div class="duel-rows" id="duelRows"></div>
+      <ul class="duel-keys" id="duelKeys"></ul>
+    </div>
+  </section>
+
+  <p style="text-align:center; font-size:10px; color:var(--text-muted); margin:20px 0 0;">v2.0</p>
+
+</div>
+
+<div class="overlay" id="whoOverlay">
+  <div class="sheet">
+    <h3>¿Quién eres?</h3>
+    <p class="sub">Así avisamos si alguien más te marca por error. Puedes cambiarlo cuando quieras.</p>
+    <div id="whoList"></div>
+    <button class="close" id="whoAnonBtn">Prefiero no decir</button>
+  </div>
+</div>
+
+<div class="overlay" id="posOverlay">
+  <div class="sheet">
+    <h3 id="posSheetTitle">Confirmar posición</h3>
+    <p class="sub">Confirma en qué posición juegas. Queda registrada para las próximas fechas.</p>
+    <button class="pick" data-tag="ARQ">🧤 Arquero</button>
+    <button class="pick" data-tag="DEF">🛡️ Defensa</button>
+    <button class="pick" data-tag="VOL">🎯 Volante</button>
+    <button class="pick" data-tag="DEL">⚡ Delantero</button>
+    <button class="pick" data-tag="">🤷 Sin definir</button>
+    <button class="close" id="posSheetClose">Cancelar</button>
+  </div>
+</div>
+
+<!-- Firebase (compat SDK, no build tools needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<!-- Cambia ?v= cada vez que cambie shared.js, para que el celular no use una copia vieja -->
+<script src="shared.js?v=2026-10-19"></script>
+<script>
+  function renderAll(){
+    renderRosterChips("rosterList", sortRoster(allRosterIds()));
+  }
+
+  document.getElementById("addPlayerBtn").addEventListener("click", addNewPlayer);
+  document.getElementById("whoAnonBtn").addEventListener("click", chooseAnonymous);
+  initPositionPickerUI();
+  initWhoAmI();
+
+  renderAll();
+  initFirebase(renderAll);
+
+  // ============================================================
+  // Tabla de posiciones + tendencia de puntos (solo lectura).
+  // Colapsado por defecto para no estorbar la asistencia, que es
+  // la acción principal de esta página.
+  // ============================================================
+  const standingsToggle = document.getElementById("standingsToggle");
+  const standingsBody = document.getElementById("standingsBody");
+  standingsToggle.addEventListener("click", () => {
+    const expanded = standingsToggle.getAttribute("aria-expanded") === "true";
+    standingsToggle.setAttribute("aria-expanded", String(!expanded));
+    standingsBody.hidden = expanded;
+  });
+
+  function fechaShortLabel(label){
+    if(!label) return "?";
+    // Busca el patrón "Nra/da/ta/va fecha" dentro de la etiqueta, para que
+    // funcione igual con "5ta fecha" o con una etiqueta larga tipo
+    // "Sáb 12/09 · 7:40 pm · 5ta fecha".
+    const m = label.match(/(\d+[a-záéíóú]*)\s*fecha/i);
+    return m ? m[1] : label.split(" ")[0];
+  }
+
+  function renderStandings(fechas){
+    const summaryEl = document.getElementById("standingsSummary");
+    const listEl = document.getElementById("trendList");
+    const svg = document.getElementById("trendChart");
+
+    if(fechas.length === 0){
+      summaryEl.innerHTML = `<span class="log-empty">Todavía no hay tabla oficial cargada</span>`;
+      svg.innerHTML = "";
+      listEl.innerHTML = "";
+      return;
+    }
+
+    const last = fechas[fechas.length - 1];
+    const o = last.officialTable;
+    const dg = (typeof o.gf === "number" && typeof o.gc === "number") ? o.gf - o.gc : null;
+    summaryEl.innerHTML = `
+      <div class="standings-row">
+        <div class="standings-stat"><div class="v">${o.pos ?? "?"}°</div><div class="l">Posición</div></div>
+        <div class="standings-stat"><div class="v">${o.pts ?? "?"}</div><div class="l">Puntos</div></div>
+        <div class="standings-stat"><div class="v">${o.pj ?? "?"}</div><div class="l">PJ</div></div>
+        <div class="standings-stat"><div class="v">${dg === null ? "?" : (dg > 0 ? "+" + dg : dg)}</div><div class="l">DG</div></div>
+      </div>
+      <p style="font-size:10.5px; color:var(--text-muted); margin:0;">
+        ${last.label}: ${o.pg ?? "?"}G ${o.pe ?? "?"}E ${o.pp ?? "?"}P · ${o.gf ?? "?"}-${o.gc ?? "?"}
+      </p>
+    `;
+
+    const trend = fechas.filter(f => typeof f.officialTable.pts === "number");
+    if(trend.length === 0){
+      svg.innerHTML = "";
+      listEl.innerHTML = "";
+      return;
+    }
+
+    const W = 300, H = 110, padL = 16, padR = 16, padT = 22, padB = 20;
+    const maxPts = Math.max(...trend.map(f => f.officialTable.pts), 1);
+    const stepX = trend.length > 1 ? (W - padL - padR) / (trend.length - 1) : 0;
+    const scaleY = (v) => H - padB - (v / maxPts) * (H - padT - padB);
+    const coords = trend.map((f, i) => ({ x: padL + i * stepX, y: scaleY(f.officialTable.pts), f }));
+
+    const linePath = coords.map((c, i) => `${i === 0 ? "M" : "L"}${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(" ");
+    const baselineY = H - padB;
+
+    // Con pocos puntos (una temporada corta) etiquetar cada uno ayuda más de
+    // lo que estorba; el último queda resaltado porque es el dato vigente.
+    const dots = coords.map((c, i) => {
+      const isLast = i === coords.length - 1;
+      const title = `${c.f.label}: ${c.f.officialTable.pts} pts`;
+      const valueY = (c.y - (isLast ? 10 : 8)).toFixed(1);
+      return `
+        <circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${isLast ? 5 : 3.5}" fill="var(--accent)">
+          <title>${title}</title>
+        </circle>
+        <text x="${c.x.toFixed(1)}" y="${valueY}" font-size="${isLast ? 11 : 9.5}" font-weight="${isLast ? 700 : 600}" fill="${isLast ? "var(--text)" : "var(--text-muted)"}" text-anchor="middle">${c.f.officialTable.pts}</text>
+      `;
+    }).join("");
+
+    const labels = coords.map(c =>
+      `<text x="${c.x.toFixed(1)}" y="${H - 5}" font-size="9" fill="var(--text-muted)" text-anchor="middle">${fechaShortLabel(c.f.label)}</text>`
+    ).join("");
+
+    svg.innerHTML = `
+      <line x1="${padL}" y1="${baselineY}" x2="${W - padR}" y2="${baselineY}" stroke="var(--border)" stroke-width="1"/>
+      <path d="${linePath}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      ${dots}
+      ${labels}
+    `;
+
+    listEl.innerHTML = trend.map(f => `${fechaShortLabel(f.label)}: ${f.officialTable.pts} pts (pos ${f.officialTable.pos ?? "?"}°)`).join(" · ");
+  }
+
+  // Respaldo fijo con la fila de Promoción 2004 de la tabla oficial (1ra a 8va).
+  // La 7ma fecha descansamos: se mantiene 2° con 12 pts. Si Firestore tiene
+  // una fecha guardada, esa gana; si no, se usa esta, así la tabla nunca
+  // se queda corta aunque la base de datos no tenga las últimas fechas.
+  const STATIC_OFFICIAL_TABLE = [
+    { id:"2026-08-15", label:"1ra fecha", officialTable:{ pos:2, pts:3, pj:1, pg:1, pe:0, pp:0, gf:3, gc:1 } },
+    { id:"2026-08-22", label:"2da fecha", officialTable:{ pos:5, pts:3, pj:2, pg:1, pe:0, pp:1, gf:4, gc:5 } },
+    { id:"2026-08-29", label:"3ra fecha", officialTable:{ pos:3, pts:3, pj:3, pg:1, pe:0, pp:2, gf:4, gc:7 } },
+    { id:"2026-09-05", label:"4ta fecha", officialTable:{ pos:4, pts:6, pj:4, pg:2, pe:0, pp:2, gf:5, gc:7 } },
+    { id:"2026-09-12", label:"5ta fecha", officialTable:{ pos:2, pts:9, pj:5, pg:3, pe:0, pp:2, gf:7, gc:8 } },
+    { id:"2026-09-19", label:"6ta fecha", officialTable:{ pos:2, pts:12, pj:6, pg:4, pe:0, pp:2, gf:10, gc:9 } },
+    { id:"2026-09-26", label:"7ma fecha · descansamos", officialTable:{ pos:2, pts:12, pj:6, pg:4, pe:0, pp:2, gf:10, gc:9 } },
+    { id:"2026-10-10", label:"Sáb 10/10 · 8va fecha · vs Promoción 2001 (5-0)", officialTable:{ pos:2, pts:15, pj:7, pg:5, pe:0, pp:2, gf:15, gc:9 } },
+    { id:"2026-10-17", label:"Sáb 17/10 · 9na fecha · vs Promoción 2006 (7-1)", officialTable:{ pos:2, pts:18, pj:8, pg:6, pe:0, pp:2, gf:22, gc:10 } }
+  ];
+
+  let remoteOfficial = {};
+  function mergedFechas(){
+    const map = {};
+    STATIC_OFFICIAL_TABLE.forEach(f => { map[f.id] = f; });
+    Object.values(remoteOfficial).forEach(f => { map[f.id] = f; });
+    return Object.values(map).sort((a, b) => a.id.localeCompare(b.id));
+  }
+
+  function initStandings(){
+    renderStandings(mergedFechas());
+    try{
+      const db = firebase.firestore();
+      db.collection("seasons").doc(SEASON_ID).collection("matches").onSnapshot(snap => {
+        remoteOfficial = {};
+        snap.forEach(doc => {
+          const data = doc.data();
+          if(data && data.officialTable){
+            remoteOfficial[doc.id] = { id: doc.id, label: data.label || doc.id, officialTable: data.officialTable };
+          }
+        });
+        renderStandings(mergedFechas());
+      }, err => {
+        console.error(err);
+      });
+    }catch(err){
+      console.error(err);
+    }
+  }
+
+  initStandings();
+
+  // ============================================================
+  // Goleadores de Promoción 2004 (data fija, según nuestro registro).
+  // Para sumar una fecha nueva: agregar una columna (f10, ...).
+  // Total = suma de las columnas.
+  // ============================================================
+  const SCORERS = [
+    { name:"Gilberto Vásquez", hasta7:2, f8:3, f9:4 },
+    { name:"Ernesto Vásquez",  hasta7:3, f8:0, f9:0 },
+    { name:"Fernando Ramírez", hasta7:2, f8:0, f9:0 },
+    { name:"Renzo Yaya",       hasta7:0, f8:2, f9:3 },
+    { name:"Brayan García",    hasta7:1, f8:0, f9:0 },
+    { name:"Walter Fernández", hasta7:1, f8:0, f9:0 },
+    { name:"Oscar Bustamante", hasta7:1, f8:0, f9:0 }
+  ];
+
+  function renderScorers(){
+    const el = document.getElementById("scorersTable");
+    const cell = (n) => n > 0 ? `<td class="num">${n}</td>` : `<td class="num dash">–</td>`;
+    const rows = SCORERS
+      .map(p => ({ ...p, total: p.hasta7 + p.f8 + p.f9 }))
+      .sort((a, b) => (b.total - a.total) || a.name.localeCompare(b.name, "es"));
+    const sum = rows.reduce((acc, r) => acc + r.total, 0);
+    el.innerHTML = `
+      <table class="scorers-table">
+        <thead><tr><th>Jugador</th><th class="num">Hasta 7ma</th><th class="num">8va</th><th class="num">9na</th><th class="num">Total</th></tr></thead>
+        <tbody>
+          ${rows.map(r => `<tr><td>${r.name}</td>${cell(r.hasta7)}${cell(r.f8)}${cell(r.f9)}<td class="num total">${r.total}</td></tr>`).join("")}
+          <tr><td><strong>Total</strong></td><td class="num">${rows.reduce((a, r) => a + r.hasta7, 0)}</td><td class="num">${rows.reduce((a, r) => a + r.f8, 0)}</td><td class="num">${rows.reduce((a, r) => a + r.f9, 0)}</td><td class="num total">${sum}</td></tr>
+        </tbody>
+      </table>
+    `;
+  }
+  renderScorers();
+
+  const scorersToggle = document.getElementById("scorersToggle");
+  const scorersBody = document.getElementById("scorersBody");
+  scorersToggle.addEventListener("click", () => {
+    const expanded = scorersToggle.getAttribute("aria-expanded") === "true";
+    scorersToggle.setAttribute("aria-expanded", String(!expanded));
+    scorersBody.hidden = expanded;
+  });
+
+  // ============================================================
+  // Ranking animado del grupo (bar chart race), Grupo 02 completo.
+  // A diferencia de "Tabla de posiciones" (que lee de Firestore la
+  // fila de Promoción 2004), esto es data fija de las 9 promociones,
+  // transcrita de las tablas que publica el organizador cada fecha.
+  // No se guarda en Firestore: para sumar una fecha nueva hay que
+  // agregar una entrada más acá.
+  // ============================================================
+  const TEAM_NAMES = {
+    "2004":"2004", "2005":"2005", "2000":"2000", "2002":"2002", "2006":"2006",
+    "2003":"2003", "1998":"1998", "1999":"1999", "2001":"2001"
+  };
+  const OUR_TEAM = "2004";
+
+  const GROUP_TABLE_HISTORY = [
+    { id:"2026-08-15", label:"1ra fecha", teams:{
+      "2005":{pg:1,pe:0,pp:0,gf:3,gc:0}, "2004":{pg:1,pe:0,pp:0,gf:3,gc:1},
+      "2000":{pg:1,pe:0,pp:0,gf:2,gc:1}, "2002":{pg:0,pe:1,pp:0,gf:1,gc:1},
+      "2006":{pg:0,pe:1,pp:0,gf:1,gc:1}, "2003":{pg:0,pe:0,pp:0,gf:0,gc:0},
+      "1998":{pg:0,pe:0,pp:1,gf:1,gc:2}, "1999":{pg:0,pe:0,pp:1,gf:1,gc:3},
+      "2001":{pg:0,pe:0,pp:1,gf:0,gc:3}
+    }},
+    { id:"2026-08-22", label:"2da fecha", teams:{
+      "2005":{pg:2,pe:0,pp:0,gf:7,gc:1}, "2002":{pg:1,pe:1,pp:0,gf:5,gc:2},
+      "1998":{pg:1,pe:0,pp:1,gf:3,gc:2}, "2000":{pg:1,pe:0,pp:0,gf:2,gc:1},
+      "2004":{pg:1,pe:0,pp:1,gf:4,gc:5}, "2003":{pg:0,pe:1,pp:0,gf:0,gc:0},
+      "2006":{pg:0,pe:1,pp:1,gf:2,gc:5}, "1999":{pg:0,pe:0,pp:2,gf:1,gc:5},
+      "2001":{pg:0,pe:1,pp:1,gf:0,gc:3}
+    }},
+    { id:"2026-08-29", label:"3ra fecha", teams:{
+      "2002":{pg:2,pe:1,pp:0,gf:10,gc:2}, "2005":{pg:2,pe:1,pp:0,gf:7,gc:1},
+      "2004":{pg:1,pe:0,pp:2,gf:4,gc:7}, "1998":{pg:1,pe:0,pp:1,gf:3,gc:2},
+      "2000":{pg:1,pe:0,pp:1,gf:4,gc:4}, "2003":{pg:0,pe:2,pp:0,gf:1,gc:1},
+      "2006":{pg:0,pe:2,pp:1,gf:3,gc:6}, "2001":{pg:0,pe:1,pp:2,gf:3,gc:5},
+      "1999":{pg:0,pe:0,pp:3,gf:1,gc:10}
+    }},
+    { id:"2026-09-05", label:"4ta fecha", teams:{
+      "2005":{pg:4,pe:0,pp:0,gf:14,gc:3}, "2002":{pg:2,pe:1,pp:1,gf:12,gc:7},
+      "1998":{pg:2,pe:0,pp:1,gf:6,gc:2}, "2000":{pg:2,pe:0,pp:1,gf:7,gc:6},
+      "2004":{pg:2,pe:0,pp:2,gf:5,gc:7}, "2001":{pg:1,pe:1,pp:2,gf:3,gc:8},
+      "2003":{pg:0,pe:2,pp:1,gf:1,gc:2}, "2006":{pg:0,pe:2,pp:2,gf:5,gc:9},
+      "1999":{pg:0,pe:0,pp:3,gf:1,gc:10}
+    }},
+    { id:"2026-09-12", label:"5ta fecha", teams:{
+      "2005":{pg:5,pe:0,pp:0,gf:18,gc:3}, "2004":{pg:3,pe:0,pp:2,gf:7,gc:8},
+      "2002":{pg:2,pe:1,pp:2,gf:12,gc:8}, "1998":{pg:2,pe:0,pp:2,gf:7,gc:6},
+      "2000":{pg:2,pe:0,pp:2,gf:8,gc:8}, "2003":{pg:1,pe:2,pp:1,gf:2,gc:2},
+      "2006":{pg:1,pe:2,pp:2,gf:9,gc:10}, "2001":{pg:1,pe:1,pp:2,gf:3,gc:8},
+      "1999":{pg:0,pe:0,pp:4,gf:1,gc:14}
+    }},
+    { id:"2026-09-19", label:"6ta fecha", teams:{
+      "2005":{pg:5,pe:1,pp:0,gf:19,gc:4}, "2004":{pg:4,pe:0,pp:2,gf:10,gc:9},
+      "2002":{pg:3,pe:1,pp:2,gf:15,gc:8}, "2003":{pg:1,pe:3,pp:1,gf:3,gc:3},
+      "1998":{pg:2,pe:0,pp:3,gf:8,gc:9}, "2000":{pg:2,pe:0,pp:3,gf:8,gc:11},
+      "2006":{pg:1,pe:2,pp:2,gf:9,gc:10}, "2001":{pg:1,pe:1,pp:3,gf:3,gc:10},
+      "1999":{pg:1,pe:0,pp:4,gf:3,gc:14}
+    }},
+    { id:"2026-09-26", label:"7ma fecha", teams:{
+      "2005":{pg:5,pe:1,pp:1,gf:19,gc:5}, "2004":{pg:4,pe:0,pp:2,gf:10,gc:9},
+      "2002":{pg:3,pe:1,pp:3,gf:16,gc:10}, "2003":{pg:2,pe:3,pp:1,gf:12,gc:3},
+      "1998":{pg:3,pe:0,pp:3,gf:10,gc:10}, "2000":{pg:3,pe:0,pp:3,gf:9,gc:11},
+      "2006":{pg:1,pe:3,pp:2,gf:12,gc:13}, "2001":{pg:1,pe:2,pp:3,gf:6,gc:13},
+      "1999":{pg:1,pe:0,pp:5,gf:3,gc:23}
+    }},
+    { id:"2026-10-10", label:"8va fecha", teams:{
+      "2005":{pg:6,pe:1,pp:1,gf:20,gc:5}, "2004":{pg:5,pe:0,pp:2,gf:15,gc:9},
+      "2002":{pg:3,pe:1,pp:3,gf:16,gc:10}, "2003":{pg:2,pe:4,pp:1,gf:13,gc:4},
+      "1998":{pg:3,pe:0,pp:4,gf:10,gc:11}, "2000":{pg:3,pe:1,pp:3,gf:10,gc:12},
+      "2006":{pg:1,pe:4,pp:2,gf:13,gc:14}, "2001":{pg:1,pe:2,pp:4,gf:6,gc:18},
+      "1999":{pg:1,pe:1,pp:5,gf:4,gc:24}
+    }},
+    { id:"2026-10-17", label:"9na fecha", teams:{
+      "2005":{pg:6,pe:1,pp:1,gf:20,gc:5}, "2004":{pg:6,pe:0,pp:2,gf:22,gc:10},
+      "2002":{pg:4,pe:1,pp:3,gf:19,gc:10}, "2003":{pg:3,pe:4,pp:1,gf:15,gc:4},
+      "1998":{pg:3,pe:0,pp:5,gf:10,gc:13}, "2000":{pg:4,pe:1,pp:3,gf:22,gc:14},
+      "2006":{pg:1,pe:4,pp:3,gf:14,gc:21}, "2001":{pg:1,pe:2,pp:5,gf:6,gc:21},
+      "1999":{pg:1,pe:1,pp:6,gf:6,gc:36}
+    }}
+  ];
+
+  const RACE_ROW_H = 30;
+  let raceIndex = GROUP_TABLE_HISTORY.length - 1;
+  let racePlaying = false;
+  let raceTimer = null;
+
+  // Puntos y PJ se calculan siempre de PG/PE/PP (nunca se guardan sueltos),
+  // así el ranking nunca puede quedar inconsistente con los partidos cargados.
+  function computeStanding(teams){
+    return Object.keys(TEAM_NAMES).map(code => {
+      const t = teams[code] || { pg:0, pe:0, pp:0, gf:0, gc:0 };
+      const pts = t.pg * 3 + t.pe;
+      const dg = t.gf - t.gc;
+      return { code, pts, dg, gf: t.gf };
+    }).sort((a, b) => (b.pts - a.pts) || (b.dg - a.dg) || (b.gf - a.gf));
+  }
+
+  function renderRace(){
+    const container = document.getElementById("raceContainer");
+    const fechaLabel = document.getElementById("raceFechaLabel");
+    if(!container) return;
+    const fecha = GROUP_TABLE_HISTORY[raceIndex];
+    if(!fecha) return;
+
+    if(!container.dataset.built){
+      container.innerHTML = Object.keys(TEAM_NAMES).map(code => `
+        <div class="race-row" data-code="${code}">
+          <div class="race-name">${code}${code === OUR_TEAM ? " (nosotros)" : ""}</div>
+          <div class="race-track"><div class="race-fill" style="width:0%"></div></div>
+          <div class="race-value">0</div>
+        </div>
+      `).join("");
+      container.dataset.built = "1";
+      container.style.height = (Object.keys(TEAM_NAMES).length * RACE_ROW_H) + "px";
+    }
+
+    fechaLabel.textContent = fecha.label;
+    const standing = computeStanding(fecha.teams);
+    const maxPts = Math.max(...standing.map(s => s.pts), 1);
+
+    standing.forEach((s, rank) => {
+      const row = container.querySelector(`.race-row[data-code="${s.code}"]`);
+      if(!row) return;
+      row.classList.toggle("us", s.code === OUR_TEAM);
+      row.style.transform = `translateY(${rank * RACE_ROW_H}px)`;
+      row.querySelector(".race-fill").style.width = `${(s.pts / maxPts) * 100}%`;
+      row.querySelector(".race-value").textContent = s.pts;
+    });
+  }
+
+  function updateRacePlayBtn(){
+    const btn = document.getElementById("racePlayBtn");
+    if(btn) btn.textContent = racePlaying ? "⏸" : "▶";
+  }
+
+  function raceStop(){
+    clearInterval(raceTimer);
+    racePlaying = false;
+    updateRacePlayBtn();
+  }
+
+  function raceStep(dir){
+    raceStop();
+    raceIndex = Math.max(0, Math.min(GROUP_TABLE_HISTORY.length - 1, raceIndex + dir));
+    renderRace();
+  }
+
+  function raceTogglePlay(){
+    if(racePlaying){
+      raceStop();
+      return;
+    }
+    if(raceIndex >= GROUP_TABLE_HISTORY.length - 1) raceIndex = 0;
+    racePlaying = true;
+    updateRacePlayBtn();
+    renderRace();
+    raceTimer = setInterval(() => {
+      raceIndex++;
+      renderRace();
+      if(raceIndex >= GROUP_TABLE_HISTORY.length - 1) raceStop();
+    }, 1100);
+  }
+
+  document.getElementById("racePrevBtn").addEventListener("click", () => raceStep(-1));
+  document.getElementById("raceNextBtn").addEventListener("click", () => raceStep(1));
+  document.getElementById("racePlayBtn").addEventListener("click", raceTogglePlay);
+
+  const raceToggle = document.getElementById("raceToggle");
+  const raceBody = document.getElementById("raceBody");
+  raceToggle.addEventListener("click", () => {
+    const expanded = raceToggle.getAttribute("aria-expanded") === "true";
+    raceToggle.setAttribute("aria-expanded", String(!expanded));
+    raceBody.hidden = expanded;
+    if(!expanded) renderRace();
+  });
+  // ============================================================
+  // Rivales por el 3°: evolución y estadísticas de los equipos que van
+  // detrás de nosotros. Todo sale de GROUP_TABLE_HISTORY, así que se
+  // actualiza solo al cargar una fecha nueva (el resumen es texto fijo).
+  // Para cambiar los equipos comparados, editar RIVALS_CODES.
+  // ============================================================
+  const RIVALS_CODES = ["2004", "2003", "2002", "2000"];
+  const RIVALS_COLORS = { "2004":"#e2a730", "2003":"#e8743b", "2002":"#2fbf8f", "2000":"#5aa0f0" };
+
+  function renderRivals(){
+    const last = GROUP_TABLE_HISTORY[GROUP_TABLE_HISTORY.length - 1];
+    const get = (f, c) => f.teams[c] || { pg:0, pe:0, pp:0, gf:0, gc:0 };
+    const ptsOf = (t) => t.pg * 3 + t.pe;
+
+    document.getElementById("rivalsStatsTitle").textContent =
+      `Estadísticas comparativas (tras la ${fechaShortLabel(last.label)} fecha)`;
+
+    document.getElementById("rivalsLegend").innerHTML = RIVALS_CODES.map(c =>
+      `<span><i style="background:${RIVALS_COLORS[c]}"></i>${c === OUR_TEAM ? c + " (nosotros)" : c}</span>`
+    ).join("");
+
+    // Gráfico de líneas de puntos acumulados
+    const W = 300, H = 160, padL = 24, padR = 14, padT = 14, padB = 22;
+    const series = RIVALS_CODES.map(c => GROUP_TABLE_HISTORY.map(f => ptsOf(get(f, c))));
+    const maxPts = Math.max(...series.flat(), 3);
+    const top = Math.ceil(maxPts / 3) * 3;
+    const n = GROUP_TABLE_HISTORY.length;
+    const x = (i) => padL + (n > 1 ? i * (W - padL - padR) / (n - 1) : 0);
+    const y = (v) => H - padB - (v / top) * (H - padT - padB);
+    let g = "";
+    for(let v = 0; v <= top; v += 3){
+      g += `<line x1="${padL}" y1="${y(v).toFixed(1)}" x2="${W - padR}" y2="${y(v).toFixed(1)}" stroke="var(--border)" stroke-width="1"/>`;
+      g += `<text x="${padL - 5}" y="${(y(v) + 3).toFixed(1)}" font-size="8" fill="var(--text-muted)" text-anchor="end">${v}</text>`;
+    }
+    GROUP_TABLE_HISTORY.forEach((f, i) => {
+      g += `<text x="${x(i).toFixed(1)}" y="${H - 6}" font-size="8" fill="var(--text-muted)" text-anchor="middle">${fechaShortLabel(f.label)}</text>`;
+    });
+    // Nuestro equipo se dibuja al final para que quede arriba
+    const order = [...RIVALS_CODES.keys()].sort((a, b) => (RIVALS_CODES[a] === OUR_TEAM) - (RIVALS_CODES[b] === OUR_TEAM));
+    order.forEach(k => {
+      const c = RIVALS_CODES[k], col = RIVALS_COLORS[c], isUs = c === OUR_TEAM;
+      const path = series[k].map((v, i) => `${i === 0 ? "M" : "L"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+      g += `<path d="${path}" fill="none" stroke="${col}" stroke-width="${isUs ? 2.6 : 1.8}" stroke-linecap="round" stroke-linejoin="round"/>`;
+      const lastV = series[k][n - 1];
+      g += `<circle cx="${x(n - 1).toFixed(1)}" cy="${y(lastV).toFixed(1)}" r="${isUs ? 4 : 3}" fill="${col}"><title>${c}: ${lastV} pts</title></circle>`;
+    });
+    document.getElementById("rivalsChart").innerHTML = g;
+
+    // Tabla comparativa
+    const standing = computeStanding(last.teams);
+    const rows = RIVALS_CODES.map(c => {
+      const t = get(last, c), pj = t.pg + t.pe + t.pp, pts = ptsOf(t);
+      return {
+        c, pos: standing.findIndex(s => s.code === c) + 1, pts, pj,
+        gep: `${t.pg}-${t.pe}-${t.pp}`, gfgc: `${t.gf} / ${t.gc}`,
+        dg: t.gf - t.gc, ppp: pj ? pts / pj : 0, gfp: pj ? t.gf / pj : 0, gcp: pj ? t.gc / pj : 0
+      };
+    });
+    const fmt = (v) => String(+v.toFixed(2)).replace(".", ",");
+    const sgn = (v) => v > 0 ? "+" + v : String(v).replace("-", "−");
+    const bestIdx = (key, low) => {
+      const vals = rows.map(r => r[key]);
+      const b = low ? Math.min(...vals) : Math.max(...vals);
+      return vals.map(v => v === b);
+    };
+    const lines = [
+      { l:"Posición", f:r => r.pos + "°" },
+      { l:"Puntos", f:r => r.pts, best:bestIdx("pts") },
+      { l:"PJ", f:r => r.pj },
+      { l:"G-E-P", f:r => r.gep },
+      { l:"Goles a favor / en contra", f:r => r.gfgc },
+      { l:"Dif. de gol", f:r => sgn(r.dg), best:bestIdx("dg") },
+      { l:"Puntos por partido", f:r => fmt(r.ppp), best:bestIdx("ppp") },
+      { l:"Goles a favor por partido", f:r => fmt(r.gfp), best:bestIdx("gfp") },
+      { l:"Goles en contra por partido", f:r => fmt(r.gcp), best:bestIdx("gcp", true) }
+    ];
+    document.getElementById("rivalsTable").innerHTML =
+      `<thead><tr><th></th>${rows.map(r => `<th>${r.c}</th>`).join("")}</tr></thead><tbody>` +
+      lines.map(ln => `<tr><td>${ln.l}</td>${rows.map((r, i) =>
+        `<td class="${ln.best && ln.best[i] ? "best" : ""}">${ln.f(r)}</td>`).join("")}</tr>`).join("") +
+      `</tbody>`;
+  }
+  renderRivals();
+
+  const rivalsToggle = document.getElementById("rivalsToggle");
+  const rivalsBody = document.getElementById("rivalsBody");
+  rivalsToggle.addEventListener("click", () => {
+    const expanded = rivalsToggle.getAttribute("aria-expanded") === "true";
+    rivalsToggle.setAttribute("aria-expanded", String(!expanded));
+    rivalsBody.hidden = expanded;
+  });
+
+  // ============================================================
+  // Previa del partido: nosotros vs el rival de MATCH_LABEL.
+  // Todo se calcula de GROUP_TABLE_HISTORY, así que al cargar una
+  // fecha nueva y cambiar el rival en shared.js se actualiza sola.
+  // Si la fecha es descanso (sin "Promoción XXXX"), no se muestra.
+  // ============================================================
+  const RIVAL_MATCH = MATCH_LABEL.match(/Promoci[oó]n\s+(\d{4})/i);
+  const RIVAL = RIVAL_MATCH && TEAM_NAMES[RIVAL_MATCH[1]] ? RIVAL_MATCH[1] : null;
+
+  function teamLine(code){
+    return GROUP_TABLE_HISTORY.map(f => {
+      const t = f.teams[code] || { pg:0, pe:0, pp:0, gf:0, gc:0 };
+      const pos = computeStanding(f.teams).findIndex(s => s.code === code) + 1;
+      return { ...t, pj: t.pg + t.pe + t.pp, pts: t.pg * 3 + t.pe, pos };
+    });
+  }
+
+  function fmtNum(v){ return String(+v.toFixed(2)); }
+
+  function renderPrevia(){
+    const us = teamLine(OUR_TEAM), them = teamLine(RIVAL);
+    const a = us[us.length - 1], b = them[them.length - 1];
+    const leader = computeStanding(GROUP_TABLE_HISTORY[GROUP_TABLE_HISTORY.length - 1].teams)[0];
+
+    document.getElementById("duelScore").innerHTML = `
+      <div class="duel-side us"><div class="duel-team">${OUR_TEAM}</div>
+        <div class="duel-sub">${a.pos}° · ${a.pts} pts</div><div class="duel-sub">${a.pg}G ${a.pe}E ${a.pp}P · ${a.gf}:${a.gc}</div></div>
+      <div class="duel-vs">VS<small>${Math.abs(a.pts - b.pts)} pts de<br>diferencia</small></div>
+      <div class="duel-side them"><div class="duel-team">${RIVAL}</div>
+        <div class="duel-sub">${b.pos}° · ${b.pts} pts</div><div class="duel-sub">${b.pg}G ${b.pe}E ${b.pp}P · ${b.gf}:${b.gc}</div></div>`;
+    document.getElementById("duelLegend").innerHTML =
+      `<span><i style="background:var(--accent)"></i>Promoción ${OUR_TEAM}</span><span><i style="background:var(--rival)"></i>Promoción ${RIVAL}</span>`;
+
+    // Línea de puntos acumulados
+    const svg = document.getElementById("duelChart");
+    const W = 300, H = 150, L = 22, R = 10, T = 12, B = 22;
+    const n = GROUP_TABLE_HISTORY.length;
+    const max = Math.max(3, Math.ceil(Math.max(...us.map(d => d.pts), ...them.map(d => d.pts)) / 3) * 3);
+    const step = max > 15 ? 6 : 3;
+    const x = i => L + (n === 1 ? 0 : i * (W - L - R) / (n - 1));
+    const y = v => T + (1 - v / max) * (H - T - B);
+    let g = "";
+    for(let v = 0; v <= max; v += step){
+      g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--border)" stroke-width="1"/>`;
+      g += `<text x="${L - 5}" y="${y(v) + 3}" font-size="8" fill="var(--text-muted)" text-anchor="end">${v}</text>`;
+    }
+    GROUP_TABLE_HISTORY.forEach((f, i) => {
+      g += `<text x="${x(i)}" y="${H - 6}" font-size="8" fill="var(--text-muted)" text-anchor="middle">${fechaShortLabel(f.label)}</text>`;
+    });
+    const path = d => d.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(p.pts).toFixed(1)}`).join("");
+    const area = d => path(d) + `L${x(n - 1)},${y(0)}L${x(0)},${y(0)}Z`;
+    [[them, "--rival"], [us, "--accent"]].forEach(([d, c]) => {
+      g += `<path d="${area(d)}" fill="var(${c})" opacity=".12"/>`;
+      g += `<path d="${path(d)}" fill="none" stroke="var(${c})" stroke-width="2" stroke-linejoin="round"/>`;
+      d.forEach((p, i) => { g += `<circle cx="${x(i)}" cy="${y(p.pts)}" r="${i === n - 1 ? 4 : 3}" fill="var(${c})" stroke="var(--card)" stroke-width="1.5"/>`; });
+    });
+    const hi = a.pts >= b.pts;
+    g += `<text x="${x(n - 1) - 6}" y="${y(a.pts) + (hi ? -7 : 12)}" font-size="9" font-weight="700" fill="var(--text)" text-anchor="end">${a.pts}</text>`;
+    g += `<text x="${x(n - 1) - 6}" y="${y(b.pts) + (hi ? 12 : -7)}" font-size="9" font-weight="700" fill="var(--text)" text-anchor="end">${b.pts}</text>`;
+    g += `<line id="duelCross" y1="${T}" y2="${H - B}" stroke="var(--text-muted)" stroke-width="1" opacity="0"/>`;
+    const w = n > 1 ? (W - L - R) / (n - 1) : W - L - R;
+    GROUP_TABLE_HISTORY.forEach((f, i) => {
+      g += `<rect class="duel-hit" data-i="${i}" x="${x(i) - w / 2}" y="${T}" width="${w}" height="${H - T - B}" fill="transparent" style="cursor:pointer"/>`;
+    });
+    svg.innerHTML = g;
+    const cross = svg.querySelector("#duelCross"), tap = document.getElementById("duelTap");
+    svg.querySelectorAll(".duel-hit").forEach(r => {
+      const show = () => {
+        const i = +r.dataset.i;
+        cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("opacity", ".6");
+        tap.textContent = `${GROUP_TABLE_HISTORY[i].label}: ${OUR_TEAM} ${us[i].pts} pts (${us[i].pos}°) · ${RIVAL} ${them[i].pts} pts (${them[i].pos}°)`;
+      };
+      r.addEventListener("mouseenter", show);
+      r.addEventListener("click", show);
+    });
+
+    // Barras enfrentadas
+    const per = (v, pj) => pj ? v / pj : 0;
+    const rows = [
+      { k:"Puntos", a:a.pts, b:b.pts },
+      { k:"Ganados", a:a.pg, b:b.pg },
+      { k:"Empatados", a:a.pe, b:b.pe },
+      { k:"Perdidos", a:a.pp, b:b.pp, low:true },
+      { k:"Goles a favor", a:a.gf, b:b.gf },
+      { k:"Goles en contra", a:a.gc, b:b.gc, low:true },
+      { k:"Dif. de gol", a:a.gf - a.gc, b:b.gf - b.gc, sign:true },
+      { k:"Pts / partido", a:per(a.pts, a.pj), b:per(b.pts, b.pj) },
+      { k:"Goles / partido", a:per(a.gf, a.pj), b:per(b.gf, b.pj) },
+      { k:"Recibidos / partido", a:per(a.gc, a.pj), b:per(b.gc, b.pj), low:true }
+    ];
+    const el = document.getElementById("duelRows");
+    el.innerHTML = rows.map(r => {
+      const m = Math.max(Math.abs(r.a), Math.abs(r.b)) || 1;
+      const better = r.a === r.b ? null : ((r.low ? r.a < r.b : r.a > r.b) ? "a" : "b");
+      const f = v => r.sign && v > 0 ? "+" + v : fmtNum(v);
+      return `<div class="duel-row">
+        <span class="n l">${f(r.a)}</span>
+        <div class="duel-track l"><div class="duel-bar us${better === "a" ? " win" : ""}" data-w="${Math.abs(r.a) / m * 100}" style="width:0"></div></div>
+        <span class="k">${r.k}</span>
+        <div class="duel-track"><div class="duel-bar them${better === "b" ? " win" : ""}" data-w="${Math.abs(r.b) / m * 100}" style="width:0"></div></div>
+        <span class="n">${f(r.b)}</span>
+      </div>`;
+    }).join("");
+    requestAnimationFrame(() => requestAnimationFrame(() =>
+      el.querySelectorAll(".duel-bar").forEach(bar => { bar.style.width = Math.max(+bar.dataset.w, 2) + "%"; })
+    ));
+
+    // Datos clave (se calculan solos)
+    const keys = [
+      { c:"us", t:`Sumamos ${fmtNum(per(a.pts, a.pj))} puntos por partido; ${RIVAL} suma ${fmtNum(per(b.pts, b.pj))}.` },
+      { c:"them", t:`${RIVAL} recibe ${fmtNum(per(b.gc, b.pj))} goles por partido (${b.gc} en ${b.pj}) y mete ${fmtNum(per(b.gf, b.pj))}.` },
+      { c:"them", t:`${RIVAL} lleva ${b.pe} empate${b.pe === 1 ? "" : "s"} en ${b.pj} partidos.` }
+    ];
+    const win = a.pts + 3;
+    let stake = `Si ganamos llegamos a ${win} puntos.`;
+    if(leader.code !== OUR_TEAM){
+      const lp = leader.pts;
+      stake += ` Promoción ${leader.code} es primero con ${lp} pts` + (win > lp ? `: si ellos pierden, quedamos primeros.` : `.`);
+    }
+    keys.push({ c:"us", t: stake });
+    document.getElementById("duelKeys").innerHTML = keys.map(k => `<li class="${k.c}">${k.t}</li>`).join("");
+  }
+
+  if(RIVAL){
+    document.getElementById("previaPanel").hidden = false;
+    document.getElementById("previaTitle").textContent = `Previa vs Promoción ${RIVAL}`;
+    const previaToggle = document.getElementById("previaToggle");
+    const previaBody = document.getElementById("previaBody");
+    previaToggle.addEventListener("click", () => {
+      const expanded = previaToggle.getAttribute("aria-expanded") === "true";
+      previaToggle.setAttribute("aria-expanded", String(!expanded));
+      previaBody.hidden = expanded;
+      if(!expanded) renderPrevia();
+    });
+  }
+</script>
+</body>
+</html>
